@@ -1,0 +1,5 @@
+i686-linux-gnu-gcc -pthread -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes -g -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -fPIC -DHAVE_GETIFADDRS=1 -I/usr/include/python3.4m -c build/temp.linux-i686-3.4/conftest-1.c -o build/temp.linux-i686-3.4/build/temp.linux-i686-3.4/conftest-1.o
+build/temp.linux-i686-3.4/conftest-1.c: In function ‘main’:
+build/temp.linux-i686-3.4/conftest-1.c:10:19: warning: variable ‘ret’ set but not used [-Wunused-but-set-variable]
+               int ret;
+                   ^

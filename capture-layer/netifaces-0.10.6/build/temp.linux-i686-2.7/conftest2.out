@@ -1,0 +1,5 @@
+i686-linux-gnu-gcc -pthread -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes -fPIC -DHAVE_GETIFADDRS=1 -I/usr/include/python2.7 -c build/temp.linux-i686-2.7/conftest-1.c -o build/temp.linux-i686-2.7/build/temp.linux-i686-2.7/conftest-1.o
+build/temp.linux-i686-2.7/conftest-1.c: In function ‘main’:
+build/temp.linux-i686-2.7/conftest-1.c:10:19: warning: variable ‘ret’ set but not used [-Wunused-but-set-variable]
+               int ret;
+                   ^
