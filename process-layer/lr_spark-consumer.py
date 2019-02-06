@@ -2,7 +2,7 @@
 # Descrição: Aplicação que consome o streaming do Apache Kafka e efetua o processamento
 #
 # Obs: rodar essa aplicação com Pythons 3.5
-#
+#NEW
 
 import findspark
 #findspark.init('/home/administrador/MineCap/infra/spark-2.3.0-bin-hadoop2.7')
@@ -17,6 +17,7 @@ from pyspark import SparkContext, SparkConf
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 from operator import add
+from controller_com import add_flow
 import math
 from pyspark.ml.linalg import Vectors
 from pyspark.sql import Row
@@ -52,7 +53,7 @@ flows = lines.flatMap(lambda line: line.split(" "))#.map(lambda word: (word[1:-1
 ##### tratamento dos dados
 
 #fluxoRDD = sc.textFile("/home/administrador/MineCap/process-layer/dataset_fluxo_bc.csv")
-fluxoRDD = sc.textFile("/home/administrador/MineCap/process-layer/dataset_novo.csv")
+fluxoRDD = sc.textFile("/home/helio/MineCap/process-layer/dataset_novo.csv")
 
 # Removendo a primeira linha do arquivo (cabeçalho)
 firstLine = fluxoRDD.first()
@@ -232,7 +233,7 @@ scalerModel = scaler.fit(fluxoDF)
 scaledData = scalerModel.transform(fluxoDF)
 
 # Criando o modelo
-lrClassifer = LogisticRegression(maxIter=100, regParam=0.3, elasticNetParam=0.8, family="multinomial", labelCol="rotulo", featuresCol="atributos")
+lrClassifer = LogisticRegression(labelCol="rotulo", featuresCol="scaledFeatures")
 modelo = lrClassifer.fit(scaledData)
 
 
@@ -279,6 +280,9 @@ def output_rdd(rdd):
 			with open('proba.txt', 'a') as arq:
                                 arq.write(str(ln4))
                                 arq.write('\n')
+			if ln2 == 1:
+				add_flow(ln1[0], ln1[2])
+				add_flow(ln1[2], ln1[0])
 
 
 flows.foreachRDD(lambda rdd: output_rdd(rdd))
