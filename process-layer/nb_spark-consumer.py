@@ -52,7 +52,7 @@ flows = lines.flatMap(lambda line: line.split(" "))#.map(lambda word: (word[1:-1
 ##### tratamento dos dados
 
 #fluxoRDD = sc.textFile("/home/administrador/MineCap/process-layer/dataset_fluxo_bc.csv")
-fluxoRDD = sc.textFile("/home/administrador/MineCap/process-layer/dataset_novo.csv")
+fluxoRDD = sc.textFile("/home/helio/MineCap/process-layer/dataset_novo.csv")
 
 # Removendo a primeira linha do arquivo (cabeçalho)
 firstLine = fluxoRDD.first()
@@ -232,7 +232,7 @@ scalerModel = scaler.fit(fluxoDF)
 scaledData = scalerModel.transform(fluxoDF)
 
 # Criando o modelo
-nbClassifer = NaiveBayes(smoothing=1.0, modelType="multinomial", labelCol = "rotulo", featuresCol = "scaledFeatures")
+nbClassifer = NaiveBayes(labelCol = "rotulo", featuresCol = "scaledFeatures")
 modelo = nbClassifer.fit(scaledData)
 
 
@@ -277,8 +277,13 @@ def output_rdd(rdd):
 				arq.write(str(ln3))
 				arq.write('\n')
 			with open('proba.txt', 'a') as arq:
-                                arq.write(str(ln4))
-                                arq.write('\n')
+                            arq.write(str(ln4))
+                            arq.write('\n')
+			if l2 == 1:
+				add_flow(ln1[0], ln1[2])
+				add_flow(ln1[2], ln1[0])
+
+
 
 
 flows.foreachRDD(lambda rdd: output_rdd(rdd))

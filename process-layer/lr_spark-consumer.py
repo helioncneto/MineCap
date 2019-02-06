@@ -2,7 +2,8 @@
 # Descrição: Aplicação que consome o streaming do Apache Kafka e efetua o processamento
 #
 # Obs: rodar essa aplicação com Pythons 3.5
-#NEW
+##
+##
 
 import findspark
 #findspark.init('/home/administrador/MineCap/infra/spark-2.3.0-bin-hadoop2.7')
