@@ -108,6 +108,6 @@ plt.legend(loc="lower right")
 plt.show()
 '''
 
-plot_roc_multi(y1=desejada1, y2=desejada2, prob1=proba1, prob2=proba2)
+plot_roc_multi(y1=desejada1, y2=desejada2, prob1=proba1, prob2=proba2, alg1='RF', alg2='LR')
 
 

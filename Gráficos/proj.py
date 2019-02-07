@@ -125,7 +125,7 @@ def plot_roc(y, prob, titulo=''):
     plt.legend(loc="lower right")
     plt.show()
 
-def plot_roc_multi(y1, y2, prob1, prob2, titulo=''):
+def plot_roc_multi(y1, y2, prob1, prob2, alg1, alg2,titulo=''):
     
     a1 = []
     for i in range(len(y1)):
@@ -181,8 +181,8 @@ def plot_roc_multi(y1, y2, prob1, prob2, titulo=''):
     plt.rcParams['axes.titlesize'] = 20
     plt.rcParams['xtick.labelsize'] = 18
     plt.rcParams['ytick.labelsize'] = 18
-    plt.plot(fpr1[0], tpr1[0], color='darkorange', lw=lw, label='MLP (AUC = %0.2f)' % roc_auc1[0])
-    plt.plot(fpr2[0], tpr2[0], color='green', lw=lw, label='KNN (AUC = %0.2f)' % roc_auc2[0])
+    plt.plot(fpr1[0], tpr1[0], color='darkorange', lw=lw, label=alg1+' (AUC = %0.2f)' % roc_auc1[0])
+    plt.plot(fpr2[0], tpr2[0], color='green', lw=lw, label=alg2+' (AUC = %0.2f)' % roc_auc2[0])
     #plt.plot(fpr3[0], tpr3[0], color='red', lw=lw, label='CDT (AUC = %0.2f)' % roc_auc3[0])
     plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
     plt.xlim([-0.0, 1.0])
@@ -217,7 +217,8 @@ def plot_roc_multi(y1, y2, prob1, prob2, titulo=''):
     plt.ylabel('Taxa de Verdadeiro Positivo')
     plt.title(titulo)
     plt.legend(loc="lower right")
-    plt.savefig('plot.pdf', bbox_inches='tight')
+    #plt.savefig('plot.pdf', bbox_inches='tight')
+    plt.show()
 
     
 '''
