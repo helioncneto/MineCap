@@ -125,44 +125,51 @@ def plot_roc(y, prob, titulo=''):
     plt.legend(loc="lower right")
     plt.show()
 
-def plot_roc_multi(y, prob1, prob2, prob3, titulo=''):
+def plot_roc_multi(y1, y2, prob1, prob2, titulo=''):
     
-    a = []
-    for i in range(len(y)):
-        if y[i] == 0:
-            a.append([1, 0])
+    a1 = []
+    for i in range(len(y1)):
+        if y1[i] == 0.0:
+            a1.append([1, 0])
         else:
-            a.append([0, 1])
-    a = np.array(a)
+            a1.append([0, 1])
+    a1 = np.array(a1)
 
+    a2 = []
+    for i in range(len(y2)):
+        if y2[i] == 0.0:
+            a2.append([1, 0])
+        else:
+            a2.append([0, 1])
+    a2 = np.array(a1)
 
-    fpr1, fpr2, fpr3 = dict(), dict(), dict()
-    tpr1, tpr2, tpr3 = dict(), dict(), dict()
-    roc_auc1, roc_auc2, roc_auc3 = dict(), dict(), dict()
+    fpr1, fpr2 = dict(), dict()
+    tpr1, tpr2 = dict(), dict()
+    roc_auc1, roc_auc2 = dict(), dict()
 
     for i in range(1):
-        fpr1[i], tpr1[i], _ = roc_curve(a[:, i], prob1[:, i])
+        fpr1[i], tpr1[i], _ = roc_curve(a1[:, i], prob1[:, i])
         roc_auc1[i] = auc(fpr1[i], tpr1[i])
 
     # Compute micro-average ROC curve and ROC area
-    fpr1["micro"], tpr1["micro"], _ = roc_curve(a.ravel(), prob1.ravel())
+    fpr1["micro"], tpr1["micro"], _ = roc_curve(a1.ravel(), prob1.ravel())
     roc_auc1["micro"] = auc(fpr1["micro"], tpr1["micro"])
     
     for i in range(1):
-        fpr2[i], tpr2[i], _ = roc_curve(a[:, i], prob2[:, i])
+        fpr2[i], tpr2[i], _ = roc_curve(a2[:, i], prob2[:, i])
         roc_auc2[i] = auc(fpr2[i], tpr2[i])
 
     # Compute micro-average ROC curve and ROC area
-    fpr2["micro"], tpr2["micro"], _ = roc_curve(a.ravel(), prob2.ravel())
+    fpr2["micro"], tpr2["micro"], _ = roc_curve(a2.ravel(), prob2.ravel())
     roc_auc2["micro"] = auc(fpr2["micro"], tpr2["micro"])
     
-    for i in range(1):
-        fpr3[i], tpr3[i], _ = roc_curve(a[:, i], prob3[:, i])
-        roc_auc3[i] = auc(fpr3[i], tpr3[i])
+#    for i in range(1):
+#        fpr3[i], tpr3[i], _ = roc_curve(a[:, i], prob3[:, i])
+#        roc_auc3[i] = auc(fpr3[i], tpr3[i])
 
     # Compute micro-average ROC curve and ROC area
-    fpr3["micro"], tpr3["micro"], _ = roc_curve(a.ravel(), prob3.ravel())
-    roc_auc3["micro"] = auc(fpr3["micro"], tpr3["micro"])
+#    fpr3["micro"], tpr3["micro"], _ = roc_curve(a.ravel(), prob3.ravel())
+#    roc_auc3["micro"] = auc(fpr3["micro"], tpr3["micro"])
     
     
     plt.figure()
@@ -176,7 +183,7 @@ def plot_roc_multi(y, prob1, prob2, prob3, titulo=''):
     plt.rcParams['ytick.labelsize'] = 18
     plt.plot(fpr1[0], tpr1[0], color='darkorange', lw=lw, label='MLP (AUC = %0.2f)' % roc_auc1[0])
     plt.plot(fpr2[0], tpr2[0], color='green', lw=lw, label='KNN (AUC = %0.2f)' % roc_auc2[0])
-    plt.plot(fpr3[0], tpr3[0], color='red', lw=lw, label='CDT (AUC = %0.2f)' % roc_auc3[0])
+    #plt.plot(fpr3[0], tpr3[0], color='red', lw=lw, label='CDT (AUC = %0.2f)' % roc_auc3[0])
     plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
     plt.xlim([-0.0, 1.0])
     plt.ylim([0.0, 1.05])
@@ -195,7 +202,7 @@ def plot_roc_multi(y, prob1, prob2, prob3, titulo=''):
     
     ax.set_ylim(0,1)
     '''
-
+    '''
     ax.annotate('KNN', xy=(0.15,1), xytext=(0.1,0.85),
                 arrowprops=dict(arrowstyle="->",connectionstyle="arc3")
                 )
@@ -204,7 +211,7 @@ def plot_roc_multi(y, prob1, prob2, prob3, titulo=''):
     ax.annotate('MLP', xy=(0.35, 0.96), xytext=(0.39,0.89), arrowprops=dict(arrowstyle="->",connectionstyle="arc3"))
     
     ax.set_ylim(0,1)
-    
+     '''
     
     plt.xlabel('Taxa de Falso Positivo')
     plt.ylabel('Taxa de Verdadeiro Positivo')
