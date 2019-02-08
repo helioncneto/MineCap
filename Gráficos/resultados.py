@@ -1,6 +1,7 @@
 
 from proj import plot_roc_multi
 import numpy as np
+import matplotlib.pyplot as plt
 desejada1 = np.genfromtxt('lbl_fluxos.txt')
 desejada2 = np.genfromtxt('lbl_fluxos_LR.txt')
 
@@ -109,5 +110,24 @@ plt.show()
 '''
 
 plot_roc_multi(y1=desejada1, y2=desejada2, prob1=proba1, prob2=proba2, alg1='RF', alg2='LR')
+
+N = 3
+fig, ax = plt.subplots()
+width = 0.25
+
+r1 = np.arange(N)
+r2 = [x + width for x in r1]
+
+dt = [precision1, sensibilidade1, especificidade1]
+ax.bar(r1, dt, width, color='lime', label='DT')
+lr = [precision2, sensibilidade2, especificidade2]
+ax.bar(r2, lr, width, color='none', edgecolor='blue', hatch = 'xxxx', label='LR')
+
+ax.set_xticks([r + width/2 for r in range(len(dt))])
+ax.set_xticklabels(('Precisão', 'Sensibilidade', 'Especificidade'), fontsize=8)
+
+plt.legend()
+plt.show()
+
 
 
