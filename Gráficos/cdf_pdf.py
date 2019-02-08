@@ -49,17 +49,30 @@ for i in range(len(lista_percent)):
 
 fig, ax = plt.subplots()
 #x = np.array(dic_percent.)
-print(x)
-
 
 ax.plot(x, cdf , markerfacecolor='skyblue', markersize=5)
-ax.set_xticklabels(x, fontsize=12)
-#ax.set_yticklabels(('0','1', '2', '3', '4', '5', '6'), fontsize=12)
-#plt.margins(0.02)
+ax.set_xlim([0.2,12])
+ax.set_ylim([0.2,1])
+
+ax.set_axisbelow(True)
+ax.yaxis.grid(True, color='gray', linestyle='dashed', alpha=0.2)
+ax.xaxis.grid(True, color='gray', linestyle='dashed', alpha=0.2)
+
+ax.set_xlabel("Latência (ms)", fontsize=12)
+ax.set_ylabel("Probabilidade", fontsize=12)
 plt.show()
 
 
+lista_p_around = []
+for i in lista_percent:
+    lista_p_around.append(round(i, 2))
 
+plt.bar(x, lista_p_around, align='center', color='blue')
+#plt.hist(x, bins=lista_p_around)
+plt.xlabel('Latência (ms)')
+plt.ylabel('Probabilidade')
+
+plt.show()
 
 
 
