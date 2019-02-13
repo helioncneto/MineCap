@@ -68,47 +68,6 @@ proba1 = np.genfromtxt('../process-layer/DT/proba.txt', delimiter=',')
 proba2 = np.genfromtxt('../process-layer/LR/proba.txt', delimiter=',')
 
 
-'''
-#get_ipython().run_line_magic('matplotlib', 'inline')
-from sklearn.metrics import roc_curve, auc
-import matplotlib.pyplot as plt
-
-
-    
-a = []
-for i in range(len(desejada)):
-    if desejada[i] == 0:
-        a.append([1, 0])
-    else:
-        a.append([0, 1])
-a = np.array(a)
-
-
-fpr = dict()
-tpr = dict()
-roc_auc = dict()
-
-for i in range(1):
-    fpr[i], tpr[i], _ = roc_curve(a[:, i], proba[:, i])
-    roc_auc[i] = auc(fpr[i], tpr[i])
-
-    # Compute micro-average ROC curve and ROC area
-fpr["micro"], tpr["micro"], _ = roc_curve(a.ravel(), proba.ravel())
-roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
-
-plt.figure()
-lw = 2
-plt.plot(fpr[0], tpr[0], color='darkorange', lw=lw, label='Curva ROC (AUC = %0.2f)' % roc_auc[0])
-plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
-plt.xlim([-0.0, 1.0])
-plt.ylim([0.0, 1.05])
-plt.xlabel('Taxa de Falso Positivo')
-plt.ylabel('Taxa de Verdadeiro Positivo')
-#plt.title(titulo)
-plt.legend(loc="lower right")
-plt.show()
-'''
-
 plot_roc_multi(y1=desejada1, y2=desejada2, prob1=proba1, prob2=proba2, alg1='RF', alg2='LR')
 
 N = 3
@@ -119,12 +78,12 @@ r1 = np.arange(N)
 r2 = [x + width for x in r1]
 
 dt = [precision1, sensibilidade1, especificidade1]
-ax.bar(r1, dt, width, color='lime', label='DT')
+ax.bar(r1, dt, width, color='royalblue', label='Random Forest')
 lr = [precision2, sensibilidade2, especificidade2]
-ax.bar(r2, lr, width, color='none', edgecolor='blue', hatch = 'xxxx', label='LR')
+ax.bar(r2, lr, width, color='none', edgecolor='lime', hatch = 'xxxx', label='Logistic Regression')
 
 ax.set_xticks([r + width/2 for r in range(len(dt))])
-ax.set_xticklabels(('Precisão', 'Sensibilidade', 'Especificidade'), fontsize=8)
+ax.set_xticklabels(('Precisão', 'Sensibilidade', 'Especificidade'), fontsize=16)
 
 plt.legend()
 plt.show()

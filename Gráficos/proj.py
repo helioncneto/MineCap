@@ -230,7 +230,6 @@ def plot_roc_multi(y1, y2, prob1, prob2, alg1, alg2,titulo=''):
     plt.cla()
     plt.close()
 '''
-    #plt.show()
 
 def plot_pca_carac(n_mlp, n_knn, n_cdp, p_mlp, p_knn, p_cdp, score='',titulo=''):
     '''
@@ -311,4 +310,3 @@ def f_importance(x, y):
 
     # Show plot
     plt.show()
-    
