@@ -6,7 +6,7 @@
 
 #fluxo = np.genfromtxt('fluxo_puro.txt', delimiter=',')
 fluxo = []
-arq = open('../process-layer/LR/fluxo_puro.txt', 'r')
+arq = open('../process-layer/GB/fluxo_puro.txt', 'r')
 texto = arq.readlines()
 for linha in texto :
     a = linha.split(',')
@@ -49,7 +49,7 @@ for i in fluxo:
     label.append(j)
 
 for i in label:
-    with open('lbl_fluxos_LR.txt', 'a') as arq:
+    with open('lbl_fluxos_GB.txt', 'a') as arq:
         arq.write(str(i))
         arq.write('\n')
 

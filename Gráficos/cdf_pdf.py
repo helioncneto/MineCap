@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from operator import itemgetter
 
-def cdf(model):
+def get_vars(model):
     arq = open('../process-layer/' +model+'/set_latency.txt', 'r')
     texto = arq.readlines()
 
@@ -54,12 +54,12 @@ def cdf(model):
     return x, cdf, lista_p_around
 
 
-def plot_cdf(x, cdf):
+def plot_cdf(x, cdf,label):
     fig, ax = plt.subplots()
     #x = np.array(dic_percent.)
 
     for i in range(len(cdf)):
-        ax.plot(x[i], cdf[i], markerfacecolor='skyblue', markersize=5)
+        ax.plot(x[i], cdf[i], markerfacecolor='skyblue', markersize=5, label=label[i])
     ax.set_xlim([0.2, 12])
     ax.set_ylim([0.2, 1])
 
@@ -69,6 +69,7 @@ def plot_cdf(x, cdf):
 
     ax.set_xlabel("Latência (ms)", fontsize=14)
     ax.set_ylabel("Probabilidade", fontsize=14)
+    plt.legend(loc='lower right')
     plt.show()
 
 
@@ -85,7 +86,8 @@ def plot_pdf(x, lista_p_around):
 
     plt.show()
 
-x1, cdf1, lista_p_around1 = cdf('DT')
-x2, cdf2, lista_p_around2 = cdf('LR')
-plot_cdf([x1,x2], [cdf1, cdf2])
+x1, cdf1, lista_p_around1 = get_vars('DT')
+x2, cdf2, lista_p_around2 = get_vars('GB')
+plot_cdf([x1, x2], [cdf1, cdf2], ['Random Forest', 'Gradient Booster Tree'])
 plot_pdf(x1, lista_p_around1)
+plot_pdf(x2, lista_p_around2)

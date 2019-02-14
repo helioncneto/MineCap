@@ -66,7 +66,7 @@ for i in range(len(ip_orig)):
             tempos[ip_orig[i] + '_' + ip_dst[i] + '_' + port_dst[i]] = lista
 
 
-
+'''
 lista_tempos = []
 for i in tempos:
     lista_tempos.append([tempos[i][0], tempos[i][-1]])
@@ -82,6 +82,6 @@ for i in lista_tempos:
 
 #print(tempos_obj)
 
-
+'''
 
 

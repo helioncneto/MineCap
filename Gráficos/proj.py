@@ -125,7 +125,7 @@ def plot_roc(y, prob, titulo=''):
     plt.legend(loc="lower right")
     plt.show()
 
-def plot_roc_multi(y1, y2, prob1, prob2, alg1, alg2,titulo=''):
+def plot_roc_multi(y1, y2, y3, prob1, prob2, prob3, alg1, alg2, alg3, titulo=''):
     
     a1 = []
     for i in range(len(y1)):
@@ -141,11 +141,19 @@ def plot_roc_multi(y1, y2, prob1, prob2, alg1, alg2,titulo=''):
             a2.append([1, 0])
         else:
             a2.append([0, 1])
-    a2 = np.array(a1)
+    a2 = np.array(a2)
 
-    fpr1, fpr2 = dict(), dict()
-    tpr1, tpr2 = dict(), dict()
-    roc_auc1, roc_auc2 = dict(), dict()
+    a3 = []
+    for i in range(len(y3)):
+        if y3[i] == 0.0:
+            a3.append([1, 0])
+        else:
+            a3.append([0, 1])
+    a3 = np.array(a3)
+
+    fpr1, fpr2, fpr3 = dict(), dict(), dict()
+    tpr1, tpr2, tpr3 = dict(), dict(), dict()
+    roc_auc1, roc_auc2, roc_auc3 = dict(), dict(), dict()
 
     for i in range(1):
         fpr1[i], tpr1[i], _ = roc_curve(a1[:, i], prob1[:, i])
@@ -162,6 +170,14 @@ def plot_roc_multi(y1, y2, prob1, prob2, alg1, alg2,titulo=''):
     # Compute micro-average ROC curve and ROC area
     fpr2["micro"], tpr2["micro"], _ = roc_curve(a2.ravel(), prob2.ravel())
     roc_auc2["micro"] = auc(fpr2["micro"], tpr2["micro"])
+
+    for i in range(1):
+        fpr3[i], tpr3[i], _ = roc_curve(a3[:, i], prob3[:, i])
+        roc_auc3[i] = auc(fpr3[i], tpr3[i])
+
+    # Compute micro-average ROC curve and ROC area
+    fpr3["micro"], tpr3["micro"], _ = roc_curve(a3.ravel(), prob3.ravel())
+    roc_auc3["micro"] = auc(fpr3["micro"], tpr3["micro"])
     
 #    for i in range(1):
 #        fpr3[i], tpr3[i], _ = roc_curve(a[:, i], prob3[:, i])
@@ -183,7 +199,7 @@ def plot_roc_multi(y1, y2, prob1, prob2, alg1, alg2,titulo=''):
     plt.rcParams['ytick.labelsize'] = 18
     plt.plot(fpr1[0], tpr1[0], color='darkorange', lw=lw, label=alg1+' (AUC = %0.2f)' % roc_auc1[0])
     plt.plot(fpr2[0], tpr2[0], color='green', lw=lw, label=alg2+' (AUC = %0.2f)' % roc_auc2[0])
-    #plt.plot(fpr3[0], tpr3[0], color='red', lw=lw, label='CDT (AUC = %0.2f)' % roc_auc3[0])
+    plt.plot(fpr3[0], tpr3[0], color='red', lw=lw, label=alg3+' (AUC = %0.2f)' % roc_auc3[0])
     plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
     plt.xlim([-0.0, 1.0])
     plt.ylim([0.0, 1.05])
