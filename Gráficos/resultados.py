@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-desejada1 = np.genfromtxt('lbl_fluxos_DT.txt')
+desejada1 = np.genfromtxt('lbl_fluxos_RF.txt')
 desejada2 = np.genfromtxt('lbl_fluxos_LR.txt')
 desejada3 = np.genfromtxt('lbl_fluxos_GB.txt')
 
@@ -13,7 +13,7 @@ desejada3 = np.genfromtxt('lbl_fluxos_GB.txt')
 # In[2]:
 
 
-prevista1 = np.genfromtxt('../process-layer/DT/outputs.txt')
+prevista1 = np.genfromtxt('../process-layer/RF/outputs.txt')
 prevista2 = np.genfromtxt('../process-layer/LR/outputs.txt')
 prevista3 = np.genfromtxt('../process-layer/GB/outputs.txt')
 
@@ -50,9 +50,9 @@ precision3 = tp3 / (tp3 + fp3)
 sensibilidade3 = tp3 / (tp3 + fn3)
 especificidade3 = tn3 / (tn3 + fp3)
 
-print("Precisão DT: ", precision1)
-print("Sensibilidade DT: ", sensibilidade1)
-print("Especificidade DT: ", especificidade1)
+print("Precisão RF: ", precision1)
+print("Sensibilidade RF: ", sensibilidade1)
+print("Especificidade RF: ", especificidade1)
 
 print("Precisão LR: ", precision2)
 print("Sensibilidade LR: ", sensibilidade2)
@@ -77,7 +77,7 @@ precision_score(desejada2, prevista2, average='micro')
 # In[8]:
 
 
-proba1 = np.genfromtxt('../process-layer/DT/proba.txt', delimiter=',')
+proba1 = np.genfromtxt('../process-layer/RF/proba.txt', delimiter=',')
 proba2 = np.genfromtxt('../process-layer/LR/proba.txt', delimiter=',')
 proba3 = np.genfromtxt('../process-layer/GB/proba.txt', delimiter=',')
 
