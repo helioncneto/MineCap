@@ -125,7 +125,7 @@ def plot_roc(y, prob, titulo=''):
     plt.legend(loc="lower right")
     plt.show()
 
-def plot_roc_multi(y1, y2, y3, prob1, prob2, prob3, alg1, alg2, alg3, titulo=''):
+def plot_roc_multi(y1, y2, y3, y4, prob1, prob2, prob3, prob4, alg1, alg2, alg3, alg4, titulo=''):
     
     a1 = []
     for i in range(len(y1)):
@@ -151,9 +151,17 @@ def plot_roc_multi(y1, y2, y3, prob1, prob2, prob3, alg1, alg2, alg3, titulo='')
             a3.append([0, 1])
     a3 = np.array(a3)
 
-    fpr1, fpr2, fpr3 = dict(), dict(), dict()
-    tpr1, tpr2, tpr3 = dict(), dict(), dict()
-    roc_auc1, roc_auc2, roc_auc3 = dict(), dict(), dict()
+    a4 = []
+    for i in range(len(y4)):
+        if y4[i] == 0.0:
+            a4.append([1, 0])
+        else:
+            a4.append([0, 1])
+    a4 = np.array(a4)
+
+    fpr1, fpr2, fpr3, fpr4 = dict(), dict(), dict(), dict()
+    tpr1, tpr2, tpr3, tpr4 = dict(), dict(), dict(), dict()
+    roc_auc1, roc_auc2, roc_auc3, roc_auc4 = dict(), dict(), dict(), dict()
 
     for i in range(1):
         fpr1[i], tpr1[i], _ = roc_curve(a1[:, i], prob1[:, i])
@@ -179,13 +187,13 @@ def plot_roc_multi(y1, y2, y3, prob1, prob2, prob3, alg1, alg2, alg3, titulo='')
     fpr3["micro"], tpr3["micro"], _ = roc_curve(a3.ravel(), prob3.ravel())
     roc_auc3["micro"] = auc(fpr3["micro"], tpr3["micro"])
     
-#    for i in range(1):
-#        fpr3[i], tpr3[i], _ = roc_curve(a[:, i], prob3[:, i])
-#        roc_auc3[i] = auc(fpr3[i], tpr3[i])
+    for i in range(1):
+        fpr4[i], tpr4[i], _ = roc_curve(a4[:, i], prob4[:, i])
+        roc_auc4[i] = auc(fpr4[i], tpr4[i])
 
     # Compute micro-average ROC curve and ROC area
-#    fpr3["micro"], tpr3["micro"], _ = roc_curve(a.ravel(), prob3.ravel())
-#    roc_auc3["micro"] = auc(fpr3["micro"], tpr3["micro"])
+    fpr4["micro"], tpr4["micro"], _ = roc_curve(a4.ravel(), prob4.ravel())
+    roc_auc4["micro"] = auc(fpr4["micro"], tpr4["micro"])
     
     
     plt.figure()
@@ -200,6 +208,7 @@ def plot_roc_multi(y1, y2, y3, prob1, prob2, prob3, alg1, alg2, alg3, titulo='')
     plt.plot(fpr1[0], tpr1[0], color='darkorange', lw=lw, label=alg1+' (AUC = %0.2f)' % roc_auc1[0])
     plt.plot(fpr2[0], tpr2[0], color='green', lw=lw, label=alg2+' (AUC = %0.2f)' % roc_auc2[0])
     plt.plot(fpr3[0], tpr3[0], color='red', lw=lw, label=alg3+' (AUC = %0.2f)' % roc_auc3[0])
+    plt.plot(fpr4[0], tpr4[0], color='yellow', lw=lw, label=alg4 + ' (AUC = %0.2f)' % roc_auc4[0])
     plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
     plt.xlim([-0.0, 1.0])
     plt.ylim([0.0, 1.05])
