@@ -202,7 +202,7 @@ def plot_roc_multi(y1, y2, y3, y4, prob1, prob2, prob3, prob4, alg1, alg2, alg3,
     plt.rcParams['axes.titlesize'] = 26
     plt.rcParams['legend.fontsize'] = 18
     plt.rcParams['axes.labelsize'] = 20
-    plt.rcParams['axes.titlesize'] = 20
+    plt.rcParams['axes.titlesize'] = 24
     plt.rcParams['xtick.labelsize'] = 18
     plt.rcParams['ytick.labelsize'] = 18
     plt.plot(fpr1[0], tpr1[0], color='darkorange', lw=lw, label=alg1+' (AUC = %0.2f)' % roc_auc1[0])
@@ -238,9 +238,9 @@ def plot_roc_multi(y1, y2, y3, y4, prob1, prob2, prob3, prob4, alg1, alg2, alg3,
     ax.set_ylim(0,1)
      '''
     
-    plt.xlabel('Taxa de Falso Positivo')
-    plt.ylabel('Taxa de Verdadeiro Positivo')
-    plt.title(titulo)
+    plt.xlabel('Taxa de Falsos Positivos', fontsize=24)
+    plt.ylabel('Taxa de Verdadeiros Positivos', fontsize=24)
+    #plt.title(titulo)
     plt.legend(loc="lower right")
     #plt.savefig('plot.pdf', bbox_inches='tight')
     plt.show()
@@ -279,8 +279,8 @@ def plot_pca_carac(n_mlp, n_knn, n_cdp, p_mlp, p_knn, p_cdp, score='',titulo='')
     plt.rcParams['legend.fontsize'] = 18
     plt.rcParams['axes.labelsize'] = 20
     plt.rcParams['axes.titlesize'] = 20
-    plt.rcParams['xtick.labelsize'] = 18
-    plt.rcParams['ytick.labelsize'] = 18
+    plt.rcParams['xtick.labelsize'] = 21
+    plt.rcParams['ytick.labelsize'] = 21
     plt.bar(indice, normal, bar_larg, alpha=transp, color='red', label='Normal', edgecolor='black', linewidth=1)
     plt.bar(indice + bar_larg, pca, bar_larg, alpha=transp, color='lightblue', label='PCA', edgecolor='black', linewidth=1)
 

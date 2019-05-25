@@ -100,7 +100,7 @@ proba2 = np.genfromtxt('../process-layer/RL/proba.txt', delimiter=',')
 proba3 = np.genfromtxt('../process-layer/GB/proba.txt', delimiter=',')
 proba4 = np.genfromtxt('../process-layer/NB/proba.txt', delimiter=',')
 
-plot_roc_multi(y1=desejada1, y2=desejada2, y3=desejada3, y4=desejada4, prob1=proba1, prob2=proba2, prob3=proba3, prob4=proba4, alg1='FA', alg2='RL', alg3='GB', alg4='NB')
+#plot_roc_multi(y1=desejada1, y2=desejada2, y3=desejada3, y4=desejada4, prob1=proba1, prob2=proba2, prob3=proba3, prob4=proba4, alg1='FA', alg2='RL', alg3='GB', alg4='NB')
 
 precision1 = precision1 * 100
 precision2 = precision2 * 100
@@ -128,19 +128,32 @@ r3 = [x + width for x in r2]
 r4 = [x + 0.01 + width for x in r3]
 
 dt = [precision1, sensibilidade1, especificidade1]
-ax.bar(r1, dt, width, color='royalblue', label='Floresta Aleatória')
+ax.bar(r1, dt, width, color='royalblue', label='Random Forest')
+ax.annotate('RF', xy=(0.01, 102), fontsize=14, xytext=(0.005,110),arrowprops=dict(arrowstyle="->", connectionstyle="arc3"),)
+ax.annotate('RF', xy=(1.01, 70), fontsize=14, xytext=(1,80),arrowprops=dict(arrowstyle="->", connectionstyle="arc3"),)
+ax.annotate('RF', xy=(2.01, 102), fontsize=14, xytext=(2.01,110),arrowprops=dict(arrowstyle="->", connectionstyle="arc3"),)
 lr = [precision2, sensibilidade2, especificidade2]
-ax.bar(r2, lr, width, color='none', edgecolor='lime', hatch='xxxx', label='Regressão Logística')
+ax.bar(r2, lr, width, color='none', edgecolor='lime', hatch='xxxx', label='Logistic Regression')
+ax.annotate('LR', xy=(0.2, 5), fontsize=14, xytext=(0.15,20),arrowprops=dict(arrowstyle="->", connectionstyle="arc3"),)
+ax.annotate('LR', xy=(1.2, 5), fontsize=14, xytext=(1.15,20),arrowprops=dict(arrowstyle="->", connectionstyle="arc3"),)
+ax.annotate('LR', xy=(2.2, 102), fontsize=14, xytext=(2.2,110),arrowprops=dict(arrowstyle="->", connectionstyle="arc3"),)
 gb = [precision3, sensibilidade3, especificidade3]
 ax.bar(r3, gb, width, color='none', edgecolor='red', hatch='////', label='Gradient Booster Tree')
+ax.annotate('GB', xy=(0.4, 102), fontsize=14, xytext=(0.45,110),arrowprops=dict(arrowstyle="->", connectionstyle="arc3"),)
+ax.annotate('GB', xy=(1.4, 65), fontsize=14, xytext=(1.4,75),arrowprops=dict(arrowstyle="->", connectionstyle="arc3"),)
+ax.annotate('GB', xy=(2.4, 102), fontsize=14, xytext=(2.4,110),arrowprops=dict(arrowstyle="->", connectionstyle="arc3"),)
 nb = [precision4, sensibilidade4, especificidade4]
 ax.bar(r4, nb, width, color='none', edgecolor='yellow', hatch='-', label='Naive Bayes')
+ax.annotate('NB', xy=(0.6, 5), fontsize=14, xytext=(0.53,20),arrowprops=dict(arrowstyle="->", connectionstyle="arc3"),)
+ax.annotate('NB', xy=(1.6, 5), fontsize=14, xytext=(1.55,20),arrowprops=dict(arrowstyle="->", connectionstyle="arc3"),)
+ax.annotate('NB', xy=(2.6, 90), fontsize=14, xytext=(2.55,100),arrowprops=dict(arrowstyle="->", connectionstyle="arc3"),)
 
-ax.set_xticks([r + width/2 for r in range(len(dt))])
-ax.set_xticklabels(('Precisão', 'Sensibilidade', 'Especificidade'), fontsize=24)
-plt.ylabel('Porcentagem (%)', fontsize=24)
+plt.ylim([0.0, 120])
+ax.set_xticks([r + width*1.5 for r in range(len(dt))])
+ax.set_xticklabels(('Precision', 'Sensibility', 'Specificity'), fontsize=24)
+plt.ylabel('Percent (%)', fontsize=24)
 
-plt.legend()
+#plt.legend()
 plt.show()
 
 
@@ -259,7 +272,7 @@ def plot_multi(trafego_ger1, trafego_ent1,trafego_ger2, trafego_ent2):
         taxa_trafego_2.append(trafego_ent2[i] / trafego_ger2[i])
 
 
-    ax.bar(r_1, taxa_trafego_1, width, color='none', edgecolor='purple', hatch='////', label='Floresta Aleatória')
+    ax.bar(r_1, taxa_trafego_1, width, color='none', edgecolor='purple', hatch='////', label='Random Forest')
     ax.bar(r_2, taxa_trafego_2, width, color='none', edgecolor='lightblue', hatch='xxxx', label='Gradient Booster Tree')
 
 
@@ -270,10 +283,10 @@ def plot_multi(trafego_ger1, trafego_ent1,trafego_ger2, trafego_ent2):
     '''
 
 
-    ax.set_xticks([r + width for r in range(len(trafego_ent1))])
+    ax.set_xticks([r + width/2 for r in range(len(trafego_ent1))])
     ax.set_xticklabels(('Host 5', 'Host 8', 'Host 9', 'Host 13'), fontsize=16)
     plt.yticks(fontsize=16)
-    plt.ylabel('Taxa de Pacotes Entregues', fontsize=21)
+    plt.ylabel('Delivered Packets Rate', fontsize=21)
 
     plt.legend(fontsize=21, loc='lower right')
     plt.show()
