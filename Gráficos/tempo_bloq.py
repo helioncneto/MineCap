@@ -116,6 +116,6 @@ plt.bar(modelos, horas, color='blue', width=0.35)
 plt.ylabel("Tempo (m)")
 
 #plt.legend()
-#plt.title(titulo)
+#plt.title(titulo).
 plt.show()
 
