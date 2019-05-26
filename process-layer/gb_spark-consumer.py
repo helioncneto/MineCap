@@ -25,7 +25,7 @@ from pyspark.ml.linalg import Vectors
 from pyspark.sql import Row
 from pyspark.ml.feature import StringIndexer
 from pyspark.ml.feature import PCA
-from pyspark.ml.classification import RandomForestClassifier
+from pyspark.ml.classification import GBTClassifier
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
@@ -244,12 +244,12 @@ si_model = stringIndexer.fit(scaledData)
 obj_final = si_model.transform(scaledData)
 
 # Criando o modelo
-rfClassifer = RandomForestClassifier(labelCol="indexed", featuresCol="scaledFeatures", probabilityCol="probability",
-                                     numTrees=20)
-modelo = rfClassifer.fit(obj_final)
+gbt = GBTClassifier(labelCol="rotulo", featuresCol="scaledFeatures")
+modelo = gbt.fit(obj_final)
 
 
 def output_rdd(rdd):
+    ts = time.time()
     output = []
     fluxo = []
     s_classe = []
@@ -290,6 +290,8 @@ def output_rdd(rdd):
                 arq.write(str(ln1))
                 arq.write(',')
                 arq.write(str(ln2))
+                arq.write(',')
+                arq.write(str(ts) + ',' + str(time.time()))
                 arq.write('\n')
             with open('outputs.txt', 'a') as arq:
                 arq.write(str(ln2))
