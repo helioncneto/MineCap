@@ -19,6 +19,7 @@ from pyspark.streaming.kafka import KafkaUtils
 from operator import add
 from controller_com import add_flow
 import math
+import numpy as np
 from pyspark.ml.linalg import Vectors
 from pyspark.sql import Row
 from pyspark.ml.feature import StringIndexer
@@ -232,17 +233,23 @@ scaledData = scalerModel.transform(fluxoDF)
 stringIndexer = StringIndexer(inputCol = "rotulo", outputCol = "indexed")
 si_model = stringIndexer.fit(scaledData)
 obj_final = si_model.transform(scaledData)
+X = np.array(obj_final.select("atributos").collect())
+y = np.array(obj_final.select("rotulo").collect())
+
+#mudar a dimensão da matriz de atributos para 2d
+nsamples, nx, ny = X.shape
+d2_X = X.reshape((nsamples,nx*ny))
 
 # Criando o modelo
-rfClassifer = RandomForestClassifier(labelCol = "indexed", featuresCol = "scaledFeatures", probabilityCol = "probability", numTrees=20)
-modelo = rfClassifer.fit(obj_final)
+sgdClassifer = linear_model.SGDClassifier(loss='log', alpha=0.000001, max_iter=6000)
+modelo = sgdClassifer.fit(d2_X, y)
 
 
 def output_rdd(rdd):
     output = []
     fluxo = []
     s_classe = []
-    probability = []
+    #probability = []
     teste = []
 
     if not rdd.isEmpty():
@@ -255,22 +262,27 @@ def output_rdd(rdd):
         string_Indexer = StringIndexer(inputCol="rotulo", outputCol="indexed")
         si__model = stringIndexer.fit(scaled_Data)
         obj__final = si__model.transform(scaled_Data)
+        X = np.array(obj__final.select("atributos").collect())
+        # mudar a dimensão da matriz de atributos para 2d
+        nsamples, nx, ny = X.shape
+        d2_X = X.reshape((nsamples, nx * ny))
+
         #print(obj__final.select("scaledFeatures").show(10))
-        predictions = modelo.transform(obj__final)
+        predictions = modelo.transform(d2_X)
         #print(predictions.select("prediction", "scaledFeatures").show(10))
-        for i in predictions.select("prediction").collect():
-            output.append(i["prediction"])
+        for i in predictions:
+            output.append(i)
 
         for i in rdd2.collect():
             fluxo.append([i["srcip"][1:], i["srcport"], i["dstip"], i["dstport"]])
 
-        for i in predictions.select("probability").collect():
-            probability.append(i["probability"])
+        #for i in predictions.select("probability").collect():
+            #probability.append(i["probability"])
 
         for i in rdd.collect():
             s_classe.append(i)
 
-        for ln1, ln2, ln3, ln4 in zip(fluxo, output, s_classe, probability):
+        for ln1, ln2, ln3 in zip(fluxo, output, s_classe):
             with open('results.txt', 'a') as arq:
                 arq.write(str(ln1))
                 arq.write(',')
@@ -284,22 +296,42 @@ def output_rdd(rdd):
             with open('fluxo_puro.txt', 'a') as arq:
                 arq.write(str(ln3))
                 arq.write('\n')
+                print()
             arq.close()
-            with open('proba.txt', 'a') as arq:
-                arq.write(str(ln4))
+            with open('incremental.txt', 'a') as arq:
+                arq.write(str(ln3[1:-5]))
+                arq.write(str(int(ln2)))
                 arq.write('\n')
             arq.close()
+            #with open('proba.txt', 'a') as arq:
+                #arq.write(str(ln4))
+                #arq.write('\n')
+            #arq.close()
             if ln2 == 1:
                 add_flow(ln1[0], ln1[2])
                 add_flow(ln1[2], ln1[0])
-            with open('fluxo_puro.txt', 'r') as arq:
+            with open('incremental.txt', 'r') as arq:
                 texto = arq.readlines()
                 for i in texto:
-                    teste.append(i[1:-7])
-            arq.close()
-            if len(teste) > 10:
-                print(teste)
-                os.remove('fluxo_puro.txt')
+                    teste.append(i)
+                print(len(teste))
+                if len(teste) > 10:
+                    with open('foi.txt', 'a') as f:
+                        f.write('foi carai')
+                    f.close()
+                    X = []
+                    y = []
+                    for i in range(len(teste)):
+                        X.append(teste[i][:-2])
+                        y.append(teste[i][-1])
+                    modelo.partial_fit(X, y)
+                    os.remove('incremental.txt')
+
+
+            #arq.close()
+            #if len(teste) > 10:
+                #print(teste)
+                #os.remove('fluxo_puro.txt')
 
 
 
