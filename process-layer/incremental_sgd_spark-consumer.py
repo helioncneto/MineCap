@@ -314,11 +314,7 @@ def output_rdd(rdd):
                 texto = arq.readlines()
                 for i in texto:
                     teste.append(i)
-                print(len(teste))
                 if len(teste) > 10:
-                    with open('foi.txt', 'a') as f:
-                        f.write('foi carai')
-                    f.close()
                     X = []
                     y = []
                     for i in range(len(teste)):
