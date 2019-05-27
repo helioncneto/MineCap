@@ -26,6 +26,7 @@ from pyspark.ml.feature import StringIndexer
 from pyspark.ml.feature import PCA
 from pyspark.ml.classification import RandomForestClassifier
 from sklearn import linear_model
+import sklearn.preprocessing
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
@@ -102,8 +103,8 @@ def transformToNumeric(inputStr) :
     sflow_bbytes = float(attList[37])
     fpsh_cnt = float(attList[38])
     bpsh_cnt = float(attList[39])
-    #furg_cnt = float(attList[40])
-    #burg_cnt = float(attList[41])
+    furg_cnt = float(attList[40]) #retirar
+    burg_cnt = float(attList[41]) #retirar
     total_fhlen = float(attList[42])
     total_bhlen = float(attList[43])
     dscp = float(attList[44])
@@ -119,7 +120,7 @@ def transformToNumeric(inputStr) :
                  std_active=std_active, min_idle=min_idle, mean_idle=mean_idle, max_idle=max_idle,
                  std_idle=std_idle, sflow_fpackets=sflow_fpackets, sflow_fbytes=sflow_fbytes,
                  sflow_bpackets=sflow_bpackets, sflow_bbytes=sflow_bbytes, fpsh_cnt=fpsh_cnt,
-                 bpsh_cnt=bpsh_cnt, total_fhlen=total_fhlen,
+                 bpsh_cnt=bpsh_cnt, furg_cnt = furg_cnt, burg_cnt = burg_cnt, total_fhlen=total_fhlen,
                  total_bhlen=total_bhlen, dscp=dscp)
 
     return linhas
@@ -166,8 +167,8 @@ def transformToNumeric2(inputStr) :
     sflow_bbytes = float(attList[37])
     fpsh_cnt = float(attList[38])
     bpsh_cnt = float(attList[39])
-    #furg_cnt = float(attList[40])
-    #burg_cnt = float(attList[41])
+    furg_cnt = float(attList[40])
+    burg_cnt = float(attList[41])
     total_fhlen = float(attList[42])
     total_bhlen = float(attList[43])
     dscp = float(attList[44])
@@ -183,7 +184,7 @@ def transformToNumeric2(inputStr) :
                  std_active = std_active, min_idle = min_idle, mean_idle = mean_idle, max_idle = max_idle,
                  std_idle = std_idle, sflow_fpackets = sflow_fpackets, sflow_fbytes = sflow_fbytes,
                  sflow_bpackets = sflow_bpackets, sflow_bbytes = sflow_bbytes, fpsh_cnt = fpsh_cnt,
-                 bpsh_cnt = bpsh_cnt, total_fhlen = total_fhlen,
+                 bpsh_cnt = bpsh_cnt, furg_cnt = furg_cnt, burg_cnt = burg_cnt, total_fhlen = total_fhlen,
                  total_bhlen = total_bhlen, dscp = dscp)
 
     return linhas
@@ -203,7 +204,7 @@ def transformaVar(row) :
                                          row["mean_active"], row["max_active"], row["std_active"], row["min_idle"],
                                          row["mean_idle"], row["max_idle"], row["std_idle"], row["sflow_fpackets"],
                                          row["sflow_fbytes"], row["sflow_bpackets"], row["sflow_bbytes"],
-                                         row["fpsh_cnt"], row["bpsh_cnt"],
+                                         row["fpsh_cnt"], row["bpsh_cnt"], row["furg_cnt"], row["burg_cnt"],
                                          row["total_fhlen"], row["total_bhlen"], row["dscp"]]))
     return obj
 
@@ -251,6 +252,8 @@ def output_rdd(rdd):
     s_classe = []
     #probability = []
     teste = []
+    X_inc = []
+    y_inc = []
 
     if not rdd.isEmpty():
         rdd2 = rdd.map(transformToNumeric2)
@@ -268,7 +271,7 @@ def output_rdd(rdd):
         d2_X = X.reshape((nsamples, nx * ny))
 
         #print(obj__final.select("scaledFeatures").show(10))
-        predictions = modelo.transform(d2_X)
+        predictions = modelo.predict(d2_X)
         #print(predictions.select("prediction", "scaledFeatures").show(10))
         for i in predictions:
             output.append(i)
@@ -310,18 +313,17 @@ def output_rdd(rdd):
             if ln2 == 1:
                 add_flow(ln1[0], ln1[2])
                 add_flow(ln1[2], ln1[0])
-            with open('incremental.txt', 'r') as arq:
-                texto = arq.readlines()
-                for i in texto:
-                    teste.append(i)
-                if len(teste) > 10:
-                    X = []
-                    y = []
-                    for i in range(len(teste)):
-                        X.append(teste[i][:-2])
-                        y.append(teste[i][-1])
-                    modelo.partial_fit(X, y)
-                    os.remove('incremental.txt')
+            arq = open('incremental.txt')
+            texto = arq.readlines()
+            if len(texto) > 50:
+                for linha in texto:
+                    a = linha.split(',')
+                    X_inc.append(a[5:-1])
+                    y_inc.append(int(a[-1]))
+                scalerskl = sklearn.preprocessing.MinMaxScaler()
+                scalerskl.fit(X_inc)
+                modelo.partial_fit(X_inc, y_inc)
+                os.remove('incremental.txt')
 
 
             #arq.close()
