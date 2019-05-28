@@ -247,11 +247,7 @@ modelo = sgdClassifer.fit(d2_X, y)
 
 
 def output_rdd(rdd):
-    output = []
-    fluxo = []
-    s_classe = []
-    #probability = []
-    teste = []
+
     X_inc = []
     y_inc = []
 
@@ -273,17 +269,10 @@ def output_rdd(rdd):
         #print(obj__final.select("scaledFeatures").show(10))
         predictions = modelo.predict(d2_X)
         #print(predictions.select("prediction", "scaledFeatures").show(10))
-        for i in predictions:
-            output.append(i)
 
-        for i in rdd2.collect():
-            fluxo.append([i["srcip"][1:], i["srcport"], i["dstip"], i["dstport"]])
-
-        #for i in predictions.select("probability").collect():
-            #probability.append(i["probability"])
-
-        for i in rdd.collect():
-            s_classe.append(i)
+        output = map(lambda pred: pred, predictions)
+        fluxo = map(lambda fl: [fl["srcip"][1:], fl["srcport"], fl["dstip"], fl["dstport"]], rdd2.collect())
+        s_classe = map(lambda fp: fp, rdd.collect())
 
         for ln1, ln2, ln3 in zip(fluxo, output, s_classe):
             with open('results.txt', 'a') as arq:
@@ -302,14 +291,11 @@ def output_rdd(rdd):
                 print()
             arq.close()
             with open('incremental.txt', 'a') as arq:
-                arq.write(str(ln3[1:-5]))
-                arq.write(str(int(ln2)))
-                arq.write('\n')
+                if int(ln2) == 1:
+                    arq.write(str(ln3[1:-5]))
+                    arq.write(str(int(ln2)))
+                    arq.write('\n')
             arq.close()
-            #with open('proba.txt', 'a') as arq:
-                #arq.write(str(ln4))
-                #arq.write('\n')
-            #arq.close()
             if ln2 == 1:
                 add_flow(ln1[0], ln1[2])
                 add_flow(ln1[2], ln1[0])
@@ -324,14 +310,6 @@ def output_rdd(rdd):
                 scalerskl.fit(X_inc)
                 modelo.partial_fit(X_inc, y_inc)
                 os.remove('incremental.txt')
-
-
-            #arq.close()
-            #if len(teste) > 10:
-                #print(teste)
-                #os.remove('fluxo_puro.txt')
-
-
 
 
 flows.foreachRDD(lambda rdd: output_rdd(rdd))
