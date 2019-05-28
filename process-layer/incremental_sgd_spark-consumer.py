@@ -230,12 +230,8 @@ scaler = MinMaxScaler(inputCol="atributos", outputCol="scaledFeatures", min=0.0,
 scalerModel = scaler.fit(fluxoDF)
 scaledData = scalerModel.transform(fluxoDF)
 
-# Indexação é pré-requisito para Decision Trees
-stringIndexer = StringIndexer(inputCol = "rotulo", outputCol = "indexed")
-si_model = stringIndexer.fit(scaledData)
-obj_final = si_model.transform(scaledData)
-X = np.array(obj_final.select("atributos").collect())
-y = np.array(obj_final.select("rotulo").collect())
+X = np.array(scaledData.select("scaledFeatures").collect())
+y = np.array(scaledData.select("rotulo").collect())
 
 #mudar a dimensão da matriz de atributos para 2d
 nsamples, nx, ny = X.shape
@@ -257,11 +253,8 @@ def output_rdd(rdd):
         rdd3 = DF.rdd.map(transformaVar)
         DF = spSession.createDataFrame(rdd3, ["rotulo", "atributos"])
         scaler_Model = scaler.fit(DF)
-        scaled_Data = scalerModel.transform(DF)
-        string_Indexer = StringIndexer(inputCol="rotulo", outputCol="indexed")
-        si__model = stringIndexer.fit(scaled_Data)
-        obj__final = si__model.transform(scaled_Data)
-        X = np.array(obj__final.select("atributos").collect())
+        scaled_Data = scaler_Model.transform(DF)
+        X = np.array(scaled_Data.select("scaledFeatures").collect())
         # mudar a dimensão da matriz de atributos para 2d
         nsamples, nx, ny = X.shape
         d2_X = X.reshape((nsamples, nx * ny))
