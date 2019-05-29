@@ -57,7 +57,7 @@ flows = lines.flatMap(lambda line: line.split(" "))#.map(lambda word: (word[1:-1
 ##### tratamento dos dados
 
 #fluxoRDD = sc.textFile("/home/administrador/MineCap/process-layer/dataset_fluxo_bc.csv")
-fluxoRDD = sc.textFile("/home/administrador/MineCap/process-layer/dataset_novo.csv")
+fluxoRDD = sc.textFile("/home/helio/MineCap/process-layer/dataset_novo.csv")
 
 # Removendo a primeira linha do arquivo (cabeçalho)
 firstLine = fluxoRDD.first()
