@@ -25,7 +25,7 @@ from pyspark.sql import Row
 from pyspark.ml.feature import StringIndexer
 from pyspark.ml.feature import PCA
 from pyspark.ml.classification import RandomForestClassifier
-from sklearn import linear_model
+from skmultiflow.trees import HoeffdingTree
 import sklearn.preprocessing
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark import SparkContext, SparkConf
@@ -230,17 +230,21 @@ scaler = MinMaxScaler(inputCol="atributos", outputCol="scaledFeatures", min=0.0,
 scalerModel = scaler.fit(fluxoDF)
 scaledData = scalerModel.transform(fluxoDF)
 
-X = np.array(scaledData.select("scaledFeatures").collect())
-y = np.array(scaledData.select("rotulo").collect())
-y = y.ravel()
+# Indexação é pré-requisito para Decision Trees
+stringIndexer = StringIndexer(inputCol = "rotulo", outputCol = "indexed")
+si_model = stringIndexer.fit(scaledData)
+obj_final = si_model.transform(scaledData)
+
+X = np.array(obj_final.select("scaledFeatures").collect())
+y = np.array(obj_final.select("indexed").collect())
 
 #mudar a dimensão da matriz de atributos para 2d
 nsamples, nx, ny = X.shape
 d2_X = X.reshape((nsamples,nx*ny))
 
 # Criando o modelo
-sgdClassifer = linear_model.SGDClassifier(loss='log', alpha=0.000001, max_iter=6000)
-modelo = sgdClassifer.fit(d2_X, y)
+vfdtClassifer = HoeffdingTree()
+modelo = vfdtClassifer.fit(d2_X, y)
 
 
 def output_rdd(rdd):
@@ -290,9 +294,9 @@ def output_rdd(rdd):
                     arq.write(str(int(ln2)))
                     arq.write('\n')
             arq.close()
-            #if ln2 == 1:
-                #add_flow(ln1[0], ln1[2])
-                #add_flow(ln1[2], ln1[0])
+            if ln2 == 1:
+                add_flow(ln1[0], ln1[2])
+                add_flow(ln1[2], ln1[0])
             arq = open('incremental.txt')
             texto = arq.readlines()
             if len(texto) > 50:

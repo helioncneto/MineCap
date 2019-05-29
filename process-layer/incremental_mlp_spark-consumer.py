@@ -25,12 +25,21 @@ from pyspark.sql import Row
 from pyspark.ml.feature import StringIndexer
 from pyspark.ml.feature import PCA
 from pyspark.ml.classification import RandomForestClassifier
-from sklearn import linear_model
+from sklearn.neural_network import MLPClassifier
 import sklearn.preprocessing
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
 from pyspark.ml.feature import MinMaxScaler
+from sklearn import svm
+from sklearn.linear_model import SGDClassifier
+from sklearn import tree
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neural_network import MLPClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import KFold, cross_val_score
+from imblearn.over_sampling import SMOTE
 
 n_secs = 1
 topic = "test2"
@@ -232,15 +241,16 @@ scaledData = scalerModel.transform(fluxoDF)
 
 X = np.array(scaledData.select("scaledFeatures").collect())
 y = np.array(scaledData.select("rotulo").collect())
-y = y.ravel()
 
 #mudar a dimensão da matriz de atributos para 2d
 nsamples, nx, ny = X.shape
 d2_X = X.reshape((nsamples,nx*ny))
+sm = SMOTE()
+d2_X, y = sm.fit_resample(d2_X, y)
 
 # Criando o modelo
-sgdClassifer = linear_model.SGDClassifier(loss='log', alpha=0.000001, max_iter=6000)
-modelo = sgdClassifer.fit(d2_X, y)
+mlpClassifer = MLPClassifier(hidden_layer_sizes=(53, ), alpha=0.0001, max_iter=4000, activation='relu', solver='adam')
+modelo = mlpClassifer.fit(d2_X, y)
 
 
 def output_rdd(rdd):
@@ -285,10 +295,9 @@ def output_rdd(rdd):
                 print()
             arq.close()
             with open('incremental.txt', 'a') as arq:
-                if int(ln2) == 1:
-                    arq.write(str(ln3[1:-5]))
-                    arq.write(str(int(ln2)))
-                    arq.write('\n')
+                arq.write(str(ln3[1:-5]))
+                arq.write(str(int(ln2)))
+                arq.write('\n')
             arq.close()
             #if ln2 == 1:
                 #add_flow(ln1[0], ln1[2])

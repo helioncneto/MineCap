@@ -471,29 +471,29 @@ acuracia_gb_16 = acuracia_gb_16 * 100
 
 fig, ax = plt.subplots()
 
-x = ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16']
-prec_fa = [0, precision_fa_1, precision_fa_2, precision_fa_3, precision_fa_4,
+x = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16']
+prec_fa = [precision_fa_1, precision_fa_2, precision_fa_3, precision_fa_4,
         precision_fa_5, precision_fa_6, precision_fa_7, precision_fa_8,
         precision_fa_9, precision_fa_10, precision_fa_11, precision_fa_12,
         precision_fa_13, precision_fa_14, precision_fa_15, precision_fa_16]
-ax.plot(x, prec_fa, color='red', label='Precisão')
-sens_fa = [0, sensibilidade_fa_1, sensibilidade_fa_2, sensibilidade_fa_3, sensibilidade_fa_4,
+ax.plot(x, prec_fa, color='red', label='Precisão', marker='o')
+sens_fa = [sensibilidade_fa_1, sensibilidade_fa_2, sensibilidade_fa_3, sensibilidade_fa_4,
         sensibilidade_fa_5, sensibilidade_fa_6, sensibilidade_fa_7, sensibilidade_fa_8,
         sensibilidade_fa_9, sensibilidade_fa_10, sensibilidade_fa_11, sensibilidade_fa_12,
         sensibilidade_fa_13, sensibilidade_fa_14, sensibilidade_fa_15, sensibilidade_fa_16]
-ax.plot(x, sens_fa, color='yellow', label='Sensibilidade')
-espe_fa = [0, especificidade_fa_1, especificidade_fa_2, especificidade_fa_3,
+ax.plot(x, sens_fa, color='yellow', label='Sensibilidade', marker='x')
+espe_fa = [especificidade_fa_1, especificidade_fa_2, especificidade_fa_3,
         especificidade_fa_4, especificidade_fa_5, especificidade_fa_6,
         especificidade_fa_7, especificidade_fa_8, especificidade_fa_9,
         especificidade_fa_10, especificidade_fa_11, especificidade_fa_12,
         especificidade_fa_13, especificidade_fa_14, especificidade_fa_15, especificidade_fa_16]
-ax.plot(x, espe_fa, color='blue', label='Especificidade')
-acur_fa = [0, acuracia_fa_1, acuracia_fa_2, acuracia_fa_3, acuracia_fa_4,
+ax.plot(x, espe_fa, color='blue', label='Especificidade', marker='v')
+acur_fa = [acuracia_fa_1, acuracia_fa_2, acuracia_fa_3, acuracia_fa_4,
         acuracia_fa_5, acuracia_fa_6, acuracia_fa_7,
         acuracia_fa_8, acuracia_fa_9, acuracia_fa_10,
         acuracia_fa_11, acuracia_fa_12, acuracia_fa_13,
         acuracia_fa_14, acuracia_fa_15, acuracia_fa_16]
-ax.plot(x, acur_fa, color='green', label='Acurácia')
+ax.plot(x, acur_fa, color='green', label='Acurácia', marker='*')
 
 #Tamanho dos Ticks
 plt.yticks(fontsize=16)
@@ -502,33 +502,35 @@ plt.xticks(fontsize=16)
 #Labels
 plt.xlabel("Quantidade de Mineradores", size=16)
 plt.ylabel("Taxa (%)", size=16)
+
+plt.ylim(0, 100)
 
 plt.legend(loc='lower right', prop={'size': 16})
 plt.show()
 
 fig, ax = plt.subplots()
-prec_gb = [0, precision_gb_1, precision_gb_2, precision_gb_3, precision_gb_4,
+prec_gb = [precision_gb_1, precision_gb_2, precision_gb_3, precision_gb_4,
         precision_gb_5, precision_gb_6, precision_gb_7, precision_gb_8,
         precision_gb_9, precision_gb_10, precision_gb_11, precision_gb_12,
         precision_gb_13, precision_gb_14, precision_gb_15, precision_gb_16]
-ax.plot(x, prec_gb, color='red', label='Precisão')
-sens_gb = [0, sensibilidade_gb_1, sensibilidade_gb_2, sensibilidade_gb_3, sensibilidade_gb_4,
+ax.plot(x, prec_gb, color='red', label='Precisão', marker='o')
+sens_gb = [sensibilidade_gb_1, sensibilidade_gb_2, sensibilidade_gb_3, sensibilidade_gb_4,
         sensibilidade_gb_5, sensibilidade_gb_6, sensibilidade_gb_7, sensibilidade_gb_8,
         sensibilidade_gb_9, sensibilidade_gb_10, sensibilidade_gb_11, sensibilidade_gb_12,
         sensibilidade_gb_13, sensibilidade_gb_14, sensibilidade_gb_15, sensibilidade_gb_16]
-ax.plot(x, sens_gb, color='yellow', label='Sensibilidade')
-espe_gb = [0, especificidade_gb_1, especificidade_gb_2, especificidade_gb_3,
+ax.plot(x, sens_gb, color='yellow', label='Sensibilidade', marker='x')
+espe_gb = [especificidade_gb_1, especificidade_gb_2, especificidade_gb_3,
         especificidade_gb_4, especificidade_gb_5, especificidade_gb_6,
         especificidade_gb_7, especificidade_gb_8, especificidade_gb_9,
         especificidade_gb_10, especificidade_gb_11, especificidade_gb_12,
         especificidade_gb_13, especificidade_gb_14, especificidade_gb_15, especificidade_gb_16]
-ax.plot(x, espe_gb, color='blue', label='Especificidade')
-acur_gb = [0, acuracia_gb_1, acuracia_gb_2, acuracia_gb_3, acuracia_gb_4,
+ax.plot(x, espe_gb, color='blue', label='Especificidade', marker='v')
+acur_gb = [acuracia_gb_1, acuracia_gb_2, acuracia_gb_3, acuracia_gb_4,
         acuracia_gb_5, acuracia_gb_6, acuracia_gb_7,
         acuracia_gb_8, acuracia_gb_9, acuracia_gb_10,
         acuracia_gb_11, acuracia_gb_12, acuracia_gb_13,
         acuracia_gb_14, acuracia_gb_15, acuracia_gb_16]
-ax.plot(x, acur_gb, color='green', label='Acurácia')
+ax.plot(x, acur_gb, color='green', label='Acurácia', marker='*')
 
 #Tamanho dos Ticks
 plt.yticks(fontsize=16)
@@ -537,6 +539,8 @@ plt.xticks(fontsize=16)
 #Labels
 plt.xlabel("Quantidade de Mineradores", size=16)
 plt.ylabel("Taxa (%)", size=16)
+
+plt.ylim(0, 100)
 
 plt.legend(loc='lower right', prop={'size': 16})
 plt.show()
@@ -548,10 +552,10 @@ fig, ax = plt.subplots()
 #fp = [0, fp_fa_1, fp_fa_2, fp_fa_3, fp_fa_4, fp_fa_5, fp_fa_6,
 #      fp_fa_7, fp_fa_8, fp_fa_9, fp_fa_10, fp_fa_11, fp_fa_12,
 #      fp_fa_13, fp_fa_14, fp_fa_15, fp_fa_16]
-fpr = [0, fpr_fa_1, fpr_fa_2, fpr_fa_3, fpr_fa_4, fpr_fa_5, fpr_fa_6,
+fpr_l_fa = [fpr_fa_1, fpr_fa_2, fpr_fa_3, fpr_fa_4, fpr_fa_5, fpr_fa_6,
       fpr_fa_7, fpr_fa_8, fpr_fa_9, fpr_fa_10, fpr_fa_11, fpr_fa_12,
       fpr_fa_13, fpr_fa_14, fpr_fa_15, fpr_fa_16]
-ax.plot(x, fpr, color='green', label='Taxa de Falsos Positivos (FA)')
+ax.plot(x, fpr_l_fa, color='green', label='Taxa de Falsos Positivos (FA)')
 
 #fn = [0, fn_fa_1, fn_fa_2, fn_fa_3, fn_fa_4, fn_fa_5, fn_fa_6,
 #      fn_fa_7, fn_fa_8, fn_fa_9, fn_fa_10, fn_fa_11, fn_fa_12,
@@ -580,10 +584,10 @@ fig, ax = plt.subplots()
 #tn = [0, tn_fa_1, tn_fa_2, tn_fa_3, tn_fa_4, tn_fa_5, tn_fa_6,
 #      tn_fa_7, tn_fa_8, tn_fa_9, tn_fa_10, tn_fa_11, tn_fa_12,
 #      tn_fa_13, tn_fa_14, tn_fa_15, tn_fa_16]
-tpr = [0, tpr_fa_1, tpr_fa_2, tpr_fa_3, tpr_fa_4, tpr_fa_5, tpr_fa_6,
+tpr_l_fa = [tpr_fa_1, tpr_fa_2, tpr_fa_3, tpr_fa_4, tpr_fa_5, tpr_fa_6,
       tpr_fa_7, tpr_fa_8, tpr_fa_9, tpr_fa_10, tpr_fa_11, tpr_fa_12,
       tpr_fa_13, tpr_fa_14, tpr_fa_15, tpr_fa_16]
-ax.plot(x, tpr, color='red', label='Taxa Verdadeiros Positivos (FA)')
+ax.plot(x, tpr_l_fa, color='red', label='Taxa Verdadeiros Positivos (FA)')
 
 #Labels
 plt.xlabel("Quantidade de Mineradores", size=16)
@@ -596,10 +600,10 @@ plt.show()
 ####################
 fig, ax = plt.subplots()
 
-fpr = [0, fpr_gb_1, fpr_gb_2, fpr_gb_3, fpr_gb_4, fpr_gb_5, fpr_gb_6,
+fpr_l_gb = [fpr_gb_1, fpr_gb_2, fpr_gb_3, fpr_gb_4, fpr_gb_5, fpr_gb_6,
       fpr_gb_7, fpr_gb_8, fpr_gb_9, fpr_gb_10, fpr_gb_11, fpr_gb_12,
       fpr_gb_13, fpr_gb_14, fpr_gb_15, fpr_gb_16]
-ax.plot(x, fpr, color='green', label='Taxa de Falsos Positivos (GB)')
+ax.plot(x, fpr_l_gb, color='green', label='Taxa de Falsos Positivos (GB)')
 
 
 #Labels
@@ -612,10 +616,10 @@ plt.show()
 
 fig, ax = plt.subplots()
 
-tpr = [0, tpr_gb_1, tpr_gb_2, tpr_gb_3, tpr_gb_4, tpr_gb_5, tpr_gb_6,
+tpr_l_gb = [tpr_gb_1, tpr_gb_2, tpr_gb_3, tpr_gb_4, tpr_gb_5, tpr_gb_6,
       tpr_gb_7, tpr_gb_8, tpr_gb_9, tpr_gb_10, tpr_gb_11, tpr_gb_12,
       tpr_gb_13, tpr_gb_14, tpr_gb_15, tpr_gb_16]
-ax.plot(x, tpr, color='red', label='Taxa Verdadeiros Positivos (GB)')
+ax.plot(x, tpr_l_gb, color='red', label='Taxa Verdadeiros Positivos (GB)')
 
 #Labels
 plt.xlabel("Quantidade de Mineradores", size=16)
@@ -623,6 +627,21 @@ plt.ylabel("Taxa de Verdadeiros Positivos (%)", size=16)
 
 
 plt.legend(loc='upper right', prop={'size': 16})
+plt.show()
+
+N = 16
+fig, ax = plt.subplots()
+width = 0.25
+
+r1 = np.arange(N)
+r2 = [x + width for x in r1]
+
+
+
+ax.bar(r1, tpr_l_fa, width, color='royalblue', label='Floresta Aleatória')
+ax.bar(r2, tpr_l_gb, width, color='red', label='Gradient Booster Tree')
+
+plt.legend()
 plt.show()
 
 ####################
@@ -635,7 +654,7 @@ def get_resources(miner, alg):
     oup = [x[3] for x in monitor]
 
     return cpu,mem,inp,oup
-
+'''
 cpu_fa_1, mem_fa_1, inp_fa_1, oup_fa_1 = get_resources('1', 'FA')
 cpu_fa_2, mem_fa_2, inp_fa_2, oup_fa_2 = get_resources('2', 'FA')
 cpu_fa_3, mem_fa_3, inp_fa_3, oup_fa_3 = get_resources('3', 'FA')
@@ -669,6 +688,7 @@ cpu_gb_13, mem_gb_13, inp_gb_13, oup_gb_13 = get_resources('13', 'GB')
 cpu_gb_14, mem_gb_14, inp_gb_14, oup_gb_14 = get_resources('14', 'GB')
 cpu_gb_15, mem_gb_15, inp_gb_15, oup_gb_15 = get_resources('15', 'GB')
 cpu_gb_16, mem_gb_16, inp_gb_16, oup_gb_16 = get_resources('16', 'GB')
+'''
 
 def taxa_mem(mem):
     mem_tax = []
@@ -676,7 +696,7 @@ def taxa_mem(mem):
         taxa = 100 * mem[i] / 16384
         mem_tax.append(taxa)
     return mem_tax
-
+'''
 cpufa = [cpu_fa_1, cpu_fa_2, cpu_fa_3, cpu_fa_4,
      cpu_fa_5, cpu_fa_6, cpu_fa_7, cpu_fa_8,
      cpu_fa_8, cpu_fa_9, cpu_fa_10, cpu_fa_11,
@@ -832,3 +852,4 @@ plt.ylabel("Output Packets")
 plt.xlabel("Quantidade de Mineradores")
 plt.tight_layout()
 plt.show()
+'''

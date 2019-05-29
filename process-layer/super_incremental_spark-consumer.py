@@ -13,20 +13,22 @@ os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.apache.spark:spark-streaming
 
 import sys
 import time
+import numpy as np
 from pyspark import SparkContext, SparkConf
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 from operator import add
 from controller_com import add_flow
 import math
-import numpy as np
 from pyspark.ml.linalg import Vectors
 from pyspark.sql import Row
 from pyspark.ml.feature import StringIndexer
 from pyspark.ml.feature import PCA
 from pyspark.ml.classification import RandomForestClassifier
+from pyspark.ml.classification import GBTClassifier
 from sklearn import linear_model
-import sklearn.preprocessing
+from sklearn.neural_network import MLPClassifier
+from sklearn.linear_model import PassiveAggressiveClassifier
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
@@ -103,8 +105,8 @@ def transformToNumeric(inputStr) :
     sflow_bbytes = float(attList[37])
     fpsh_cnt = float(attList[38])
     bpsh_cnt = float(attList[39])
-    furg_cnt = float(attList[40]) #retirar
-    burg_cnt = float(attList[41]) #retirar
+    #furg_cnt = float(attList[40])
+    #burg_cnt = float(attList[41])
     total_fhlen = float(attList[42])
     total_bhlen = float(attList[43])
     dscp = float(attList[44])
@@ -120,7 +122,7 @@ def transformToNumeric(inputStr) :
                  std_active=std_active, min_idle=min_idle, mean_idle=mean_idle, max_idle=max_idle,
                  std_idle=std_idle, sflow_fpackets=sflow_fpackets, sflow_fbytes=sflow_fbytes,
                  sflow_bpackets=sflow_bpackets, sflow_bbytes=sflow_bbytes, fpsh_cnt=fpsh_cnt,
-                 bpsh_cnt=bpsh_cnt, furg_cnt = furg_cnt, burg_cnt = burg_cnt, total_fhlen=total_fhlen,
+                 bpsh_cnt=bpsh_cnt, total_fhlen=total_fhlen,
                  total_bhlen=total_bhlen, dscp=dscp)
 
     return linhas
@@ -167,8 +169,8 @@ def transformToNumeric2(inputStr) :
     sflow_bbytes = float(attList[37])
     fpsh_cnt = float(attList[38])
     bpsh_cnt = float(attList[39])
-    furg_cnt = float(attList[40])
-    burg_cnt = float(attList[41])
+    #furg_cnt = float(attList[40])
+    #burg_cnt = float(attList[41])
     total_fhlen = float(attList[42])
     total_bhlen = float(attList[43])
     dscp = float(attList[44])
@@ -184,7 +186,7 @@ def transformToNumeric2(inputStr) :
                  std_active = std_active, min_idle = min_idle, mean_idle = mean_idle, max_idle = max_idle,
                  std_idle = std_idle, sflow_fpackets = sflow_fpackets, sflow_fbytes = sflow_fbytes,
                  sflow_bpackets = sflow_bpackets, sflow_bbytes = sflow_bbytes, fpsh_cnt = fpsh_cnt,
-                 bpsh_cnt = bpsh_cnt, furg_cnt = furg_cnt, burg_cnt = burg_cnt, total_fhlen = total_fhlen,
+                 bpsh_cnt = bpsh_cnt, total_fhlen = total_fhlen,
                  total_bhlen = total_bhlen, dscp = dscp)
 
     return linhas
@@ -204,7 +206,7 @@ def transformaVar(row) :
                                          row["mean_active"], row["max_active"], row["std_active"], row["min_idle"],
                                          row["mean_idle"], row["max_idle"], row["std_idle"], row["sflow_fpackets"],
                                          row["sflow_fbytes"], row["sflow_bpackets"], row["sflow_bbytes"],
-                                         row["fpsh_cnt"], row["bpsh_cnt"], row["furg_cnt"], row["burg_cnt"],
+                                         row["fpsh_cnt"], row["bpsh_cnt"],
                                          row["total_fhlen"], row["total_bhlen"], row["dscp"]]))
     return obj
 
@@ -230,23 +232,34 @@ scaler = MinMaxScaler(inputCol="atributos", outputCol="scaledFeatures", min=0.0,
 scalerModel = scaler.fit(fluxoDF)
 scaledData = scalerModel.transform(fluxoDF)
 
-X = np.array(scaledData.select("scaledFeatures").collect())
-y = np.array(scaledData.select("rotulo").collect())
-y = y.ravel()
-
-#mudar a dimensão da matriz de atributos para 2d
-nsamples, nx, ny = X.shape
-d2_X = X.reshape((nsamples,nx*ny))
+# Indexação é pré-requisito para Decision Trees
+stringIndexer = StringIndexer(inputCol = "rotulo", outputCol = "indexed")
+si_model = stringIndexer.fit(scaledData)
+obj_final = si_model.transform(scaledData)
 
 # Criando o modelo
-sgdClassifer = linear_model.SGDClassifier(loss='log', alpha=0.000001, max_iter=6000)
-modelo = sgdClassifer.fit(d2_X, y)
+rfClassifer = RandomForestClassifier(labelCol = "indexed", featuresCol = "scaledFeatures", probabilityCol = "probability", numTrees=20)
+gbtClassifer = GBTClassifier(labelCol="rotulo", featuresCol="scaledFeatures")
+(dados_treino, dados_teste) = obj_final.randomSplit([0.7, 0.3])
 
+modelorf = rfClassifer.fit(dados_treino)
+modelogbt = gbtClassifer.fit(dados_treino)
+
+pred_rf = modelorf.transform(dados_teste)
+pred_gbt = modelogbt.transform(dados_teste)
+
+def mont_feat(pred1, pred2):
+    predict = [pred1['prediction'], pred2['prediction']]
+    return predict
+
+X = np.array(list(map(mont_feat, pred_rf.select("prediction").collect(), pred_gbt.select("prediction").collect())))
+y = np.array(dados_teste.select("rotulo").collect())
+y = y.ravel()
+
+mlpClassifer = MLPClassifier(hidden_layer_sizes=(53, ), alpha=0.0001, max_iter=4000, activation='relu', solver='adam')
+modelo = mlpClassifer.fit(X, y)
 
 def output_rdd(rdd):
-
-    X_inc = []
-    y_inc = []
 
     if not rdd.isEmpty():
         rdd2 = rdd.map(transformToNumeric2)
@@ -254,19 +267,22 @@ def output_rdd(rdd):
         rdd3 = DF.rdd.map(transformaVar)
         DF = spSession.createDataFrame(rdd3, ["rotulo", "atributos"])
         scaler_Model = scaler.fit(DF)
-        scaled_Data = scaler_Model.transform(DF)
-        X = np.array(scaled_Data.select("scaledFeatures").collect())
-        # mudar a dimensão da matriz de atributos para 2d
-        nsamples, nx, ny = X.shape
-        d2_X = X.reshape((nsamples, nx * ny))
-
+        scaled_Data = scalerModel.transform(DF)
+        string_Indexer = StringIndexer(inputCol="rotulo", outputCol="indexed")
+        si__model = stringIndexer.fit(scaled_Data)
+        obj__final = si__model.transform(scaled_Data)
         #print(obj__final.select("scaledFeatures").show(10))
-        predictions = modelo.predict(d2_X)
-        #print(predictions.select("prediction", "scaledFeatures").show(10))
+        prediction_rf = modelorf.transform(obj__final)
+        prediction_gb = modelogbt.transform(obj__final)
+
+        X_real = np.array(list(map(mont_feat, prediction_rf.select("prediction").collect(), prediction_gb.select("prediction").collect())))
+        predictions = modelo.predict(X_real)
 
         output = map(lambda pred: pred, predictions)
         fluxo = map(lambda fl: [fl["srcip"][1:], fl["srcport"], fl["dstip"], fl["dstport"]], rdd2.collect())
+        #probability = map(lambda prob: prob["probability"], predictions.select("probability").collect())
         s_classe = map(lambda fp: fp, rdd.collect())
+        #map(gravar_arq, [fluxo, output, s_classe, probability])
 
         for ln1, ln2, ln3 in zip(fluxo, output, s_classe):
             with open('results.txt', 'a') as arq:
@@ -274,37 +290,18 @@ def output_rdd(rdd):
                 arq.write(',')
                 arq.write(str(ln2))
                 arq.write('\n')
-            arq.close()
             with open('outputs.txt', 'a') as arq:
                 arq.write(str(ln2))
                 arq.write('\n')
-            arq.close()
             with open('fluxo_puro.txt', 'a') as arq:
                 arq.write(str(ln3))
                 arq.write('\n')
-                print()
-            arq.close()
-            with open('incremental.txt', 'a') as arq:
-                if int(ln2) == 1:
-                    arq.write(str(ln3[1:-5]))
-                    arq.write(str(int(ln2)))
-                    arq.write('\n')
-            arq.close()
+            #with open('proba.txt', 'a') as arq:
+                #arq.write(str(ln4))
+                #arq.write('\n')
             #if ln2 == 1:
                 #add_flow(ln1[0], ln1[2])
                 #add_flow(ln1[2], ln1[0])
-            arq = open('incremental.txt')
-            texto = arq.readlines()
-            if len(texto) > 50:
-                for linha in texto:
-                    a = linha.split(',')
-                    X_inc.append(a[5:-1])
-                    y_inc.append(int(a[-1]))
-                scalerskl = sklearn.preprocessing.MinMaxScaler()
-                scalerskl.fit(X_inc)
-                modelo.partial_fit(X_inc, y_inc)
-                os.remove('incremental.txt')
-
 
 flows.foreachRDD(lambda rdd: output_rdd(rdd))
 

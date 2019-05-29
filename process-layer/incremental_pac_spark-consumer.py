@@ -25,12 +25,13 @@ from pyspark.sql import Row
 from pyspark.ml.feature import StringIndexer
 from pyspark.ml.feature import PCA
 from pyspark.ml.classification import RandomForestClassifier
-from sklearn import linear_model
-import sklearn.preprocessing
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
 from pyspark.ml.feature import MinMaxScaler
+from sklearn.linear_model import PassiveAggressiveClassifier
+from sklearn import linear_model
+import sklearn.preprocessing
 
 n_secs = 1
 topic = "test2"
@@ -239,8 +240,12 @@ nsamples, nx, ny = X.shape
 d2_X = X.reshape((nsamples,nx*ny))
 
 # Criando o modelo
-sgdClassifer = linear_model.SGDClassifier(loss='log', alpha=0.000001, max_iter=6000)
-modelo = sgdClassifer.fit(d2_X, y)
+pacClassifer = PassiveAggressiveClassifier(C=1.0, average=False, class_weight=None,
+                                           early_stopping=False, fit_intercept=True, loss='hinge',
+                                           max_iter=1000, n_iter_no_change=5, n_jobs=None,
+                                           random_state=0, shuffle=True, tol=0.001,
+                                           validation_fraction=0.1, verbose=0, warm_start=False)
+modelo = pacClassifer.fit(d2_X, y)
 
 
 def output_rdd(rdd):
