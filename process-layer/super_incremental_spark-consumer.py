@@ -57,7 +57,7 @@ flows = lines.flatMap(lambda line: line.split(" "))#.map(lambda word: (word[1:-1
 ##### tratamento dos dados
 
 #fluxoRDD = sc.textFile("/home/administrador/MineCap/process-layer/dataset_fluxo_bc.csv")
-fluxoRDD = sc.textFile("/home/helio/MineCap/process-layer/dataset_novo.csv")
+fluxoRDD = sc.textFile("/home/administrador/MineCap/process-layer/dataset_novo.csv")
 
 # Removendo a primeira linha do arquivo (cabeçalho)
 firstLine = fluxoRDD.first()
@@ -249,12 +249,13 @@ pred_rf = modelorf.transform(dados_teste)
 pred_gbt = modelogbt.transform(dados_teste)
 
 def mont_feat(pred1, pred2):
-    predict = [pred1['prediction'], pred2['prediction']]
+    predict = [pred1['probability'][0],pred1['probability'][1], pred2['probability'][0], pred2['probability'][1]]
     return predict
 
-X = np.array(list(map(mont_feat, pred_rf.select("prediction").collect(), pred_gbt.select("prediction").collect())))
+X = np.array(list(map(mont_feat, pred_rf.select("probability").collect(), pred_gbt.select("probability").collect())))
 y = np.array(dados_teste.select("rotulo").collect())
 y = y.ravel()
+print(X)
 
 mlpClassifer = MLPClassifier(hidden_layer_sizes=(53, ), alpha=0.0001, max_iter=4000, activation='relu', solver='adam')
 modelo = mlpClassifer.fit(X, y)
@@ -275,7 +276,7 @@ def output_rdd(rdd):
         prediction_rf = modelorf.transform(obj__final)
         prediction_gb = modelogbt.transform(obj__final)
 
-        X_real = np.array(list(map(mont_feat, prediction_rf.select("prediction").collect(), prediction_gb.select("prediction").collect())))
+        X_real = np.array(list(map(mont_feat, prediction_rf.select("probability").collect(), prediction_gb.select("probability").collect())))
         predictions = modelo.predict(X_real)
 
         output = map(lambda pred: pred, predictions)
