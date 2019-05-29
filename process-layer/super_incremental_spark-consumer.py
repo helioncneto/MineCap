@@ -54,7 +54,7 @@ kafkaStream = KafkaUtils.createDirectStream(ssc, [topic], {
 lines = kafkaStream.map(lambda x: x[1])
 flows = lines.flatMap(lambda line: line.split(" "))#.map(lambda word: (word[1:-1].split(",")))
 
-##### tratamento dos dados
+###### tratamento dos dados #####
 
 #fluxoRDD = sc.textFile("/home/administrador/MineCap/process-layer/dataset_fluxo_bc.csv")
 fluxoRDD = sc.textFile("/home/helio/MineCap/process-layer/dataset_novo.csv")
