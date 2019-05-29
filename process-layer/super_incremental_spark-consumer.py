@@ -282,7 +282,6 @@ def output_rdd(rdd):
         fluxo = map(lambda fl: [fl["srcip"][1:], fl["srcport"], fl["dstip"], fl["dstport"]], rdd2.collect())
         #probability = map(lambda prob: prob["probability"], predictions.select("probability").collect())
         s_classe = map(lambda fp: fp, rdd.collect())
-        #map(gravar_arq, [fluxo, output, s_classe, probability])
 
         for ln1, ln2, ln3 in zip(fluxo, output, s_classe):
             with open('results.txt', 'a') as arq:
