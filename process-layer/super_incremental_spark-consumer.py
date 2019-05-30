@@ -28,6 +28,7 @@ from pyspark.ml.classification import RandomForestClassifier
 from pyspark.ml.classification import GBTClassifier
 from sklearn import linear_model
 from sklearn.neural_network import MLPClassifier
+import sklearn.preprocessing
 from sklearn.linear_model import PassiveAggressiveClassifier
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark import SparkContext, SparkConf
@@ -251,16 +252,67 @@ pred_gbt = modelogbt.transform(dados_teste)
 def mont_feat(pred1, pred2):
     predict = [pred1['probability'][0],pred1['probability'][1], pred2['probability'][0], pred2['probability'][1]]
     return predict
+def mont_inc(x_inc, y_inc):
+    result = [x_inc[0], x_inc[1], x_inc[2], x_inc[3], y_inc[0]]
+    return result
+def transform_float(valor):
+    valor = list(map(lambda x: float(x), valor))
+    return valor
+def select_instance(b):
+    a = 0
+    if b[0] <= 0.1:
+        if b[1] >= 0.9:
+            a += 1
+    if b[0] >= 0.9:
+        if b[1] <= 0.1:
+            a += 1
+    if b[2] <= 0.1:
+        if b[3] >= 0.9:
+            a += 1
+    if b[2] >= 0.9:
+        if b[3] <= 0.1:
+            a += 1
+    if a > 0:
+        return True
+    else:
+        return False
 
 X = np.array(list(map(mont_feat, pred_rf.select("probability").collect(), pred_gbt.select("probability").collect())))
 y = np.array(dados_teste.select("rotulo").collect())
 y = y.ravel()
-print(X)
 
 mlpClassifer = MLPClassifier(hidden_layer_sizes=(53, ), alpha=0.0001, max_iter=4000, activation='relu', solver='adam')
 modelo = mlpClassifer.fit(X, y)
 
+tempo_ini = time.time()
+
 def output_rdd(rdd):
+
+    tempo_atu = time.time()
+    if int(tempo_atu-tempo_ini) < 300:
+        output_file = 'outputs.txt'
+        fluxo_file = 'fluxo_puro.txt'
+    if int(tempo_atu-tempo_ini) >= 300:
+        output_file = 'outputs_5min.txt'
+        fluxo_file = 'fluxo_puro_5min.txt'
+    if int(tempo_atu - tempo_ini) >= 600:
+        output_file = 'outputs_10min.txt'
+        fluxo_file = 'fluxo_puro_10min.txt'
+    if int(tempo_atu - tempo_ini) >= 900:
+        output_file = 'outputs_15min.txt'
+        fluxo_file = 'fluxo_puro_15min.txt'
+    if int(tempo_atu - tempo_ini) >= 1200:
+        output_file = 'outputs_20min.txt'
+        fluxo_file = 'fluxo_puro_20min.txt'
+    if int(tempo_atu - tempo_ini) >= 1500:
+        output_file = 'outputs_25min.txt'
+        fluxo_file = 'fluxo_puro_25min.txt'
+    if int(tempo_atu - tempo_ini) >= 1800:
+        output_file = 'outputs_30min.txt'
+        fluxo_file = 'fluxo_puro_30min.txt'
+    if int(tempo_atu - tempo_ini) >= 2100:
+        output_file = 'outputs_35min.txt'
+        fluxo_file = 'fluxo_puro_35min.txt'
 
     if not rdd.isEmpty():
         rdd2 = rdd.map(transformToNumeric2)
@@ -284,24 +336,47 @@ def output_rdd(rdd):
         #probability = map(lambda prob: prob["probability"], predictions.select("probability").collect())
         s_classe = map(lambda fp: fp, rdd.collect())
 
-        for ln1, ln2, ln3 in zip(fluxo, output, s_classe):
+        for ln1, ln2, ln3, ln4, ln5 in zip(fluxo, output, s_classe, X_real, predictions):
             with open('results.txt', 'a') as arq:
                 arq.write(str(ln1))
                 arq.write(',')
                 arq.write(str(ln2))
                 arq.write('\n')
-            with open('outputs.txt', 'a') as arq:
+            arq.close()
+            with open(output_file, 'a') as arq:
                 arq.write(str(ln2))
                 arq.write('\n')
-            with open('fluxo_puro.txt', 'a') as arq:
+            arq.close()
+            with open(fluxo_file, 'a') as arq:
                 arq.write(str(ln3))
                 arq.write('\n')
-            #with open('proba.txt', 'a') as arq:
-                #arq.write(str(ln4))
-                #arq.write('\n')
+            arq.close()
+            with open('incremental.txt', 'a') as arq:
+                arq.write(str(ln4[0]))
+                arq.write(',')
+                arq.write(str(ln4[1]))
+                arq.write(',')
+                arq.write(str(ln4[2]))
+                arq.write(',')
+                arq.write(str(ln4[3]))
+                arq.write(',')
+                arq.write(str(ln5))
+                arq.write('\n')
+            arq.close()
             #if ln2 == 1:
                 #add_flow(ln1[0], ln1[2])
                 #add_flow(ln1[2], ln1[0])
+            arq = open('incremental.txt')
+            texto = arq.readlines()
+            if len(texto) > 50:
+                a = list(map(lambda x: x.split(','), texto))
+                a = list(map(transform_float, a))
+                a = list(filter(select_instance, a))
+                X_inc = list(map(lambda x: x[:-1], a))
+                y_inc = list(map(lambda x: x[-1], a))
+                modelo.partial_fit(X_inc, y_inc)
+                os.remove('incremental.txt')
+            arq.close()
 
 flows.foreachRDD(lambda rdd: output_rdd(rdd))
 
