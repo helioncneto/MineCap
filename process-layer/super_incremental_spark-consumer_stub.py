@@ -296,26 +296,26 @@ class RDDProcessor:
     def __get_output_file_path(self):
         tempo_atu = time.time()
         if int(tempo_atu - self.tempo_init) < 300:
-            output_file = 'outputs_0min'+str(self.periodo)+'.txt'
-            fluxo_file = 'fluxo_puro'+str(self.periodo)+'.txt'
+            output_file = 'outputs_0min_'+str(self.periodo)+'.txt'
+            fluxo_file = 'fluxo_puro_0min_'+str(self.periodo)+'.txt'
         if int(tempo_atu - self.tempo_init) >= 300:
-            output_file = 'outputs_5min'+str(self.periodo)+'.txt'
-            fluxo_file = 'fluxo_puro_5min'+str(self.periodo)+'.txt'
+            output_file = 'outputs_5min_'+str(self.periodo)+'.txt'
+            fluxo_file = 'fluxo_puro_5min_'+str(self.periodo)+'.txt'
         if int(tempo_atu - self.tempo_init) >= 600:
-            output_file = 'outputs_10min'+str(self.periodo)+'.txt'
-            fluxo_file = 'fluxo_puro_10min'+str(self.periodo)+'.txt'
+            output_file = 'outputs_10min_'+str(self.periodo)+'.txt'
+            fluxo_file = 'fluxo_puro_10min_'+str(self.periodo)+'.txt'
         if int(tempo_atu - self.tempo_init) >= 900:
-            output_file = 'outputs_15min'+str(self.periodo)+'.txt'
-            fluxo_file = 'fluxo_puro_15min'+str(self.periodo)+'.txt'
+            output_file = 'outputs_15min_'+str(self.periodo)+'.txt'
+            fluxo_file = 'fluxo_puro_15min_'+str(self.periodo)+'.txt'
         if int(tempo_atu - self.tempo_init) >= 1200:
-            output_file = 'outputs_20min'+str(self.periodo)+'.txt'
-            fluxo_file = 'fluxo_puro_20min'+str(self.periodo)+'.txt'
+            output_file = 'outputs_20min_'+str(self.periodo)+'.txt'
+            fluxo_file = 'fluxo_puro_20min_'+str(self.periodo)+'.txt'
         if int(tempo_atu - self.tempo_init) >= 1500:
-            output_file = 'outputs_25min'+str(self.periodo)+'.txt'
-            fluxo_file = 'fluxo_puro_25min'+str(self.periodo)+'.txt'
+            output_file = 'outputs_25min_'+str(self.periodo)+'.txt'
+            fluxo_file = 'fluxo_puro_25min_'+str(self.periodo)+'.txt'
         if int(tempo_atu - self.tempo_init) >= 1800:
-            output_file = 'outputs_30min'+str(self.periodo)+'.txt'
-            fluxo_file = 'fluxo_puro_30min'+str(self.periodo)+'.txt'
+            output_file = 'outputs_30min_'+str(self.periodo)+'.txt'
+            fluxo_file = 'fluxo_puro_30min_'+str(self.periodo)+'.txt'
         if int(tempo_atu - self.tempo_init) >= 2100:
             self.tempo_init = time.time()
             self.periodo+=1
@@ -387,73 +387,9 @@ class RDDProcessor:
                     os.remove('incremental.txt')
                 arq.close()
 
-# def output_rdd(rdd):
-#     if not rdd.isEmpty():
-#         rdd2 = rdd.map(transformToNumeric2)
-#         DF = spSession.createDataFrame(rdd2)
-#         rdd3 = DF.rdd.map(transformaVar)
-#         DF = spSession.createDataFrame(rdd3, ["rotulo", "atributos"])
-#         scaler_Model = scaler.fit(DF)
-#         scaled_Data = scalerModel.transform(DF)
-#         string_Indexer = StringIndexer(inputCol="rotulo", outputCol="indexed")
-#         si__model = stringIndexer.fit(scaled_Data)
-#         obj__final = si__model.transform(scaled_Data)
-#         #print(obj__final.select("scaledFeatures").show(10))
-#         prediction_rf = modelorf.transform(obj__final)
-#         prediction_gb = modelogbt.transform(obj__final)
-#
-#         X_real = np.array(list(map(mont_feat, prediction_rf.select("probability").collect(), prediction_gb.select("probability").collect())))
-#         predictions = modelo.predict(X_real)
-#
-#         output = map(lambda pred: pred, predictions)
-#         fluxo = map(lambda fl: [fl["srcip"][1:], fl["srcport"], fl["dstip"], fl["dstport"]], rdd2.collect())
-#         #probability = map(lambda prob: prob["probability"], predictions.select("probability").collect())
-#         s_classe = map(lambda fp: fp, rdd.collect())
-#
-#         for ln1, ln2, ln3, ln4, ln5 in zip(fluxo, output, s_classe, X_real, predictions):
-#             with open('results.txt', 'a') as arq:
-#                 arq.write(str(ln1))
-#                 arq.write(',')
-#                 arq.write(str(ln2))
-#                 arq.write('\n')
-#             arq.close()
-#             with open(output_file, 'a') as arq:
-#                 arq.write(str(ln2))
-#                 arq.write('\n')
-#             arq.close()
-#             with open(fluxo_file, 'a') as arq:
-#                 arq.write(str(ln3))
-#                 arq.write('\n')
-#             arq.close()
-#             with open('incremental.txt', 'a') as arq:
-#                 arq.write(str(ln4[0]))
-#                 arq.write(',')
-#                 arq.write(str(ln4[1]))
-#                 arq.write(',')
-#                 arq.write(str(ln4[2]))
-#                 arq.write(',')
-#                 arq.write(str(ln4[3]))
-#                 arq.write(',')
-#                 arq.write(str(ln5))
-#                 arq.write('\n')
-#             arq.close()
-#             #if ln2 == 1:
-#                 #add_flow(ln1[0], ln1[2])
-#                 #add_flow(ln1[2], ln1[0])
-#             arq = open('incremental.txt')
-#             texto = arq.readlines()
-#             if len(texto) > 50:
-#                 a = list(map(lambda x: x.split(','), texto))
-#                 a = list(map(transform_float, a))
-#                 a = list(filter(select_instance, a))
-#                 X_inc = list(map(lambda x: x[:-1], a))
-#                 y_inc = list(map(lambda x: x[-1], a))
-#                 modelo.partial_fit(X_inc, y_inc)
-#                 os.remove('incremental.txt')
-#             arq.close()
 
 rddProcesser = RDDProcessor()
-flows.foreachRDD(rddProcesser.pre_process)
+flows.foreachRDD(lambda rdd: rddProcesser.pre_process(rdd))
 
 # Inicia o streaming
 ssc.start()
