@@ -295,30 +295,30 @@ class RDDProcessor:
 
     def __get_output_file_path(self):
         tempo_atu = time.time()
-        if int(tempo_atu - tempo_ini) < 300:
-            output_file = 'outputs.txt'
-            fluxo_file = 'fluxo_puro.txt'
-        if int(tempo_atu - tempo_ini) >= 300:
-            output_file = 'outputs_5min.txt'
-            fluxo_file = 'fluxo_puro_5min.txt'
-        if int(tempo_atu - tempo_ini) >= 600:
-            output_file = 'outputs_10min.txt'
-            fluxo_file = 'fluxo_puro_10min.txt'
-        if int(tempo_atu - tempo_ini) >= 900:
-            output_file = 'outputs_15min.txt'
-            fluxo_file = 'fluxo_puro_15min.txt'
-        if int(tempo_atu - tempo_ini) >= 1200:
-            output_file = 'outputs_20min.txt'
-            fluxo_file = 'fluxo_puro_20min.txt'
-        if int(tempo_atu - tempo_ini) >= 1500:
-            output_file = 'outputs_25min.txt'
-            fluxo_file = 'fluxo_puro_25min.txt'
-        if int(tempo_atu - tempo_ini) >= 1800:
-            output_file = 'outputs_30min.txt'
-            fluxo_file = 'fluxo_puro_30min.txt'
-        if int(tempo_atu - tempo_ini) >= 2100:
-            output_file = 'outputs_35min.txt'
-            fluxo_file = 'fluxo_puro_35min.txt'
+        if int(tempo_atu - self.tempo_init) < 300:
+            output_file = 'outputs_0min'+str(self.periodo)+'.txt'
+            fluxo_file = 'fluxo_puro'+str(self.periodo)+'.txt'
+        if int(tempo_atu - self.tempo_init) >= 300:
+            output_file = 'outputs_5min'+str(self.periodo)+'.txt'
+            fluxo_file = 'fluxo_puro_5min'+str(self.periodo)+'.txt'
+        if int(tempo_atu - self.tempo_init) >= 600:
+            output_file = 'outputs_10min'+str(self.periodo)+'.txt'
+            fluxo_file = 'fluxo_puro_10min'+str(self.periodo)+'.txt'
+        if int(tempo_atu - self.tempo_init) >= 900:
+            output_file = 'outputs_15min'+str(self.periodo)+'.txt'
+            fluxo_file = 'fluxo_puro_15min'+str(self.periodo)+'.txt'
+        if int(tempo_atu - self.tempo_init) >= 1200:
+            output_file = 'outputs_20min'+str(self.periodo)+'.txt'
+            fluxo_file = 'fluxo_puro_20min'+str(self.periodo)+'.txt'
+        if int(tempo_atu - self.tempo_init) >= 1500:
+            output_file = 'outputs_25min'+str(self.periodo)+'.txt'
+            fluxo_file = 'fluxo_puro_25min'+str(self.periodo)+'.txt'
+        if int(tempo_atu - self.tempo_init) >= 1800:
+            output_file = 'outputs_30min'+str(self.periodo)+'.txt'
+            fluxo_file = 'fluxo_puro_30min'+str(self.periodo)+'.txt'
+        if int(tempo_atu - self.tempo_init) >= 2100:
+            self.tempo_init = time.time()
+            self.periodo+=1
         return output_file, fluxo_file
 
     def __write_output_file(self, path, data):
