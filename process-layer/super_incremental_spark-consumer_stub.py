@@ -284,7 +284,7 @@ y = y.ravel()
 mlpClassifer = MLPClassifier(hidden_layer_sizes=(53, ), alpha=0.0001, max_iter=4000, activation='relu', solver='adam')
 modelo = mlpClassifer.fit(X, y)
 
-tempo_ini = time.time()
+#tempo_ini = time.time()
 
 class RDDProcessor:
     tempo_init = None
@@ -295,6 +295,7 @@ class RDDProcessor:
 
     def __get_output_file_path(self):
         tempo_atu = time.time()
+        output_file, fluxo_file = '',''
         if int(tempo_atu - self.tempo_init) < 300:
             output_file = 'outputs_0min_'+str(self.periodo)+'.txt'
             fluxo_file = 'fluxo_puro_0min_'+str(self.periodo)+'.txt'
