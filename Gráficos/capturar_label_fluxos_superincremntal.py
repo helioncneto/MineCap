@@ -44,6 +44,7 @@ def get_label(min):
             arq.write(str(i))
             arq.write('\n')
 
+get_label('')
 get_label('_5min')
 get_label('_10min')
 get_label('_15min')
