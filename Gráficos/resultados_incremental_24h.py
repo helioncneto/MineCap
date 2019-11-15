@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score
+import Statistics
 from sklearn.metrics import confusion_matrix
 
 
@@ -82,17 +83,21 @@ x = ['00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04
      '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
      '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00',
      '22:30', '23:00', '23:30', '24:00']
+
+s =  Statistics.Statistics()
 #ax.plot(x, precision_l, color='red', label='Precision', marker='o')
 #ax.plot(x, sensibilidade_l, color='yellow', label='Sensibility', marker='x')
 #ax.plot(x, especificidade_l, color='blue', label='Specificity', marker='v')
-ax.plot(x, acuracia_si_l, color='green', label='Acuracy SI', marker='*')
-ax.plot(x, acuracia_rf_l, color='blue', label='Acuracy RF', marker='x')
-ax.plot(x, acuracia_gb_l, color='red', label='Acuracy GB', marker='v')
+ax.errorbar(x, acuracia_si_l, yerr=s.getConfidenceInterval(acuracia_si_l), color='green', label='Acuracy SI', marker='o', markersize=3,)
+ax.errorbar(x, acuracia_rf_l, yerr=s.getConfidenceInterval(acuracia_rf_l), color='blue', label='Acuracy RF', marker='o', markersize=3, linestyle='dashdot')
+ax.errorbar(x, acuracia_gb_l, yerr=s.getConfidenceInterval(acuracia_gb_l), color='red', label='Acuracy GB', marker='o', markersize=3, linestyle='dashed')
 #ax.plot(x, list(acuracia.values()), color='green', label='Acuracy', marker='*')
 
 # Tamanho dos Ticks
 plt.yticks(fontsize=16)
-plt.xticks(fontsize=16)
+plt.xticks(fontsize=12)
+#plt.xlim('00:00', '24:00')
+plt.xticks(rotation=90)
 
 # Labels
 plt.xlabel("Tempo (min)", size=16)
