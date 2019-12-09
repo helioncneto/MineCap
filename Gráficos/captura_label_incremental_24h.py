@@ -1,7 +1,7 @@
 def get_label(min, periodo):
     for p in range(1, periodo+1):
         fluxo = []
-        arq = open('incremental/fluxo_puro_' + min + '_' + str(p) + '.txt', 'r')
+        arq = open('fluxo_puro_' + min + '_' + str(p) + '.txt', 'r')
         texto = arq.readlines()
         for linha in texto:
             a = linha.split(',')
@@ -41,14 +41,14 @@ def get_label(min, periodo):
             label.append(j)
 
         for i in label:
-            with open('incremental/lbl_fluxos_' + min + '_' + str(p) + '.txt', 'a') as arq:
+            with open('lbl_fluxos_' + min + '_' + str(p) + '.txt', 'a') as arq:
                 arq.write(str(i))
                 arq.write('\n')
 
-get_label('0min', 48)
-get_label('5min', 48)
-get_label('10min', 48)
-get_label('15min', 48)
-get_label('20min', 48)
-get_label('25min', 48)
-get_label('30min', 48)
+get_label('0min', 1)
+#get_label('5min', 48)
+#get_label('10min', 48)
+#get_label('15min', 48)
+#get_label('20min', 48)
+#get_label('25min', 48)
+#get_label('30min', 48)

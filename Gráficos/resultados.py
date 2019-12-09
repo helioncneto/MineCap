@@ -4,31 +4,36 @@ from proj import plot_roc_multi
 import numpy as np
 import matplotlib.pyplot as plt
 
-
+'''
 desejada1 = np.genfromtxt('lbl_fluxos_RF.txt')
 desejada2 = np.genfromtxt('lbl_fluxos_LR.txt')
 desejada3 = np.genfromtxt('lbl_fluxos_GB.txt')
 desejada4 = np.genfromtxt('lbl_fluxos_NB.txt')
-
+'''
+desejada = np.genfromtxt('lbl_fluxos.txt')
 
 # In[2]:
 
-
+'''
 prevista1 = np.genfromtxt('../process-layer/FA/outputs.txt')
 prevista2 = np.genfromtxt('../process-layer/RL/outputs.txt')
 prevista3 = np.genfromtxt('../process-layer/GB/outputs.txt')
 prevista4 = np.genfromtxt('../process-layer/NB/outputs.txt')
+'''
+prevista = np.genfromtxt('outputs.txt')
 
 # In[3]:
 
 
 #Acuracia
 from sklearn.metrics import accuracy_score
+'''
 accuracy_score(desejada1, prevista1)
 accuracy_score(desejada2, prevista2)
 accuracy_score(desejada3, prevista3)
 accuracy_score(desejada4, prevista4)
-
+'''
+print(accuracy_score(desejada, prevista))
 
 # In[4]:
 

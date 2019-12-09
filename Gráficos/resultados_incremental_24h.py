@@ -76,13 +76,17 @@ for i in range(1, periodo+1):
 
 
 
-
+'''
 x = ['00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04:00',
      '04:30', '05:00', '05:30', '06:00', '06:30', '07:00', '07:30', '08:00', '08:30',
      '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00',
      '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
      '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00',
      '22:30', '23:00', '23:30', '24:00']
+'''
+x = np.arange(0, 24.5, 0.5)
+x = [str(i) for i in x]
+
 
 s =  Statistics.Statistics()
 #ax.plot(x, precision_l, color='red', label='Precision', marker='o')
@@ -96,12 +100,13 @@ ax.errorbar(x, acuracia_gb_l, yerr=s.getConfidenceInterval(acuracia_gb_l), color
 # Tamanho dos Ticks
 plt.yticks(fontsize=16)
 plt.xticks(fontsize=12)
-#plt.xlim('00:00', '24:00')
+#plt.xlim(0, 24, 0.5)
+
 plt.xticks(rotation=90)
 
 # Labels
-plt.xlabel("Tempo (min)", size=16)
-plt.ylabel("Métrica (%)", size=16)
+plt.xlabel("Time (hour)", size=16)
+plt.ylabel("Score (%)", size=16)
 plt.ylim(90, 101)
 
 plt.legend(loc='lower right', prop={'size': 16})
