@@ -372,7 +372,7 @@ class RDDProcessor:
             for ln1, ln2, ln3, ln4, ln5, ln6 in zip(predictions, s_classe, X, prediction_true, prediction_false, output_rf):
                 self.__write_output_file(output_file, ln1)
                 self.__write_output_file(fluxo_file, ln2)
-                self.__write_output_file('out40.11, 59.89put_RF.txt', ln6)
+                self.__write_output_file('output_RF.txt', ln6)
                 with open('prob.txt', 'a') as arq:
                     arq.write(str(ln4))
                     arq.write(',')
