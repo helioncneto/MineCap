@@ -28,6 +28,7 @@ from pyspark.ml.classification import RandomForestClassifier
 from sklearn.linear_model import SGDRegressor
 from sklearn import linear_model
 from sklearn.neural_network import MLPClassifier
+from sklearn.neural_network import MLPRegressor
 import sklearn.preprocessing
 from sklearn.linear_model import PassiveAggressiveClassifier
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
@@ -219,7 +220,7 @@ scaler = MinMaxScaler(inputCol="atributos", outputCol="scaledFeatures", min=0.0,
 scalerModel = scaler.fit(fluxoDF)
 scaledData = scalerModel.transform(fluxoDF)
 
-pca = PCA(k=2, inputCol="atributos", outputCol="pcaFeatures")
+pca = PCA(k=14, inputCol="atributos", outputCol="pcaFeatures")
 pca_model = pca.fit(scaledData)
 result = pca_model.transform(scaledData)
 # Indexação é pré-requisito para Decision Trees
@@ -228,7 +229,7 @@ si_model = stringIndexer.fit(result)
 obj_final = si_model.transform(result)
 
 # Criando o modelo
-rfClassifer = RandomForestClassifier(labelCol="indexed", featuresCol="pcaFeatures", probabilityCol="probability", numTrees=20)
+rfClassifer = RandomForestClassifier(labelCol="indexed", featuresCol="scaledFeatures", probabilityCol="probability", numTrees=20)
 (dados_treino, dados_teste) = obj_final.randomSplit([0.7, 0.3])
 modelorf = rfClassifer.fit(dados_treino)
 pred_rf = modelorf.transform(dados_teste)
@@ -265,30 +266,32 @@ def select_instance(b):
 #X = np.array(list(map(mont_feat, pred_rf.select("probability").collect(), pred_gbt.select("probability").collect())))
 #y = np.array(dados_teste.select("rotulo").collect())
 
-X = np.array(dados_teste.select("atributos").collect())
+X = np.array(dados_teste.select("pcaFeatures").collect())
 nsamples, nx, ny = X.shape
 X = X.reshape((nsamples,nx*ny))
-
+print("TREINO")
+print(X)
 # Dataset for False proabilities
 #y_F = np.array(pred_rf.select("probability").collect()[0][1])
 y_F = np.array([i[0][0]*100 for i in pred_rf.select("probability").collect()])
 y_F = y_F.ravel()
-lr_false = SGDRegressor()
+lr_false = MLPRegressor(hidden_layer_sizes=(53, ), alpha=0.0001, max_iter=4000, activation='logistic', solver='adam')
 lr_false.fit(X, y_F)
 
 # Dataset for True proabilities
 y_T = np.array([i[0][1]*100 for i in pred_rf.select("probability").collect()])
 y_T = y_T.ravel()
-lr_true = SGDRegressor()
+lr_true = MLPRegressor(hidden_layer_sizes=(53, ), alpha=0.0001, max_iter=4000, activation='logistic', solver='adam')
 lr_true.fit(X, y_T)
 
+'''
 for t, f in zip(y_T, y_F):
     with open('prb_class.txt', 'a') as arq:
         arq.write(str(f)+', ')
         arq.write(str(t))
         arq.write('\n')
     arq.close()
-
+'''
 
 #mlpClassifer = MLPClassifier(hidden_layer_sizes=(53, ), alpha=0.0001, max_iter=4000, activation='relu', solver='adam')
 #supermodelo = mlpClassifer.fit(X, y)
@@ -344,15 +347,20 @@ class RDDProcessor:
             DF = spSession.createDataFrame(rdd2)
             rdd3 = DF.rdd.map(transformaVar)
             DF = spSession.createDataFrame(rdd3, ["rotulo", "atributos"])
+
             scaled_Data = scalerModel.transform(DF)
-            pca__model = pca.fit(scaled_Data)
-            result_ = pca__model.transform(scaled_Data)
+            #pca__model = pca.fit(scaled_Data)
+            result_ = pca_model.transform(scaled_Data)
             string_Indexer = StringIndexer(inputCol="rotulo", outputCol="indexed")
             si__model = string_Indexer.fit(result_)
             obj__final = si__model.transform(result_)
 
-            X = obj__final.select("pcaFeatures").collect()[0]
-            X = np.array(X)
+            X = np.array(obj__final.select("pcaFeatures").collect())
+            nsamples, nx, ny = X.shape
+            X = X.reshape((nsamples,nx*ny))
+            print("ONLINE")
+            print(X)
+
             prediction_true = lr_true.predict(X)
             prediction_false = lr_false.predict(X)
             predictions = []
