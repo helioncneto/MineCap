@@ -219,13 +219,16 @@ scaler = MinMaxScaler(inputCol="atributos", outputCol="scaledFeatures", min=0.0,
 scalerModel = scaler.fit(fluxoDF)
 scaledData = scalerModel.transform(fluxoDF)
 
+pca = PCA(k=2, inputCol="atributos", outputCol="pcaFeatures")
+pca_model = pca.fit(scaledData)
+result = pca_model.transform(scaledData)
 # Indexação é pré-requisito para Decision Trees
 stringIndexer = StringIndexer(inputCol = "rotulo", outputCol = "indexed")
-si_model = stringIndexer.fit(scaledData)
-obj_final = si_model.transform(scaledData)
+si_model = stringIndexer.fit(result)
+obj_final = si_model.transform(result)
 
 # Criando o modelo
-rfClassifer = RandomForestClassifier(labelCol="indexed", featuresCol="scaledFeatures", probabilityCol="probability", numTrees=20)
+rfClassifer = RandomForestClassifier(labelCol="indexed", featuresCol="pcaFeatures", probabilityCol="probability", numTrees=20)
 (dados_treino, dados_teste) = obj_final.randomSplit([0.7, 0.3])
 modelorf = rfClassifer.fit(dados_treino)
 pred_rf = modelorf.transform(dados_teste)
@@ -341,12 +344,14 @@ class RDDProcessor:
             DF = spSession.createDataFrame(rdd2)
             rdd3 = DF.rdd.map(transformaVar)
             DF = spSession.createDataFrame(rdd3, ["rotulo", "atributos"])
-            scaler_Model = scaler.fit(DF)
             scaled_Data = scalerModel.transform(DF)
+            pca__model = pca.fit(scaled_Data)
+            result_ = pca__model.transform(scaled_Data)
             string_Indexer = StringIndexer(inputCol="rotulo", outputCol="indexed")
-            si__model = stringIndexer.fit(scaled_Data)
-            obj__final = si__model.transform(scaled_Data)
-            X = obj__final.select("atributos").collect()[0]
+            si__model = string_Indexer.fit(result_)
+            obj__final = si__model.transform(result_)
+
+            X = obj__final.select("pcaFeatures").collect()[0]
             X = np.array(X)
             prediction_true = lr_true.predict(X)
             prediction_false = lr_false.predict(X)
